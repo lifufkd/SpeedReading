@@ -10,7 +10,7 @@ class DBSettings(BaseSettings):
     DB_PORT: int = 5432
 
     @property
-    async def postgresql_url(self) -> str:
+    def postgresql_url(self) -> str:
         return f"postgresql+asyncpg://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_DATABASE}"
 
     model_config = ConfigDict(env_file=".env", extra="allow")
@@ -23,6 +23,16 @@ class GenericSettings(BaseSettings):
     model_config = ConfigDict(env_file=".env", extra="allow")
 
 
+class JWTSettings(BaseSettings):
+    JWT_ALGORITHM: str = "HS256"
+    JWT_SECRET_KEY: str
+    ACCESS_TOKEN_EXPIRE_TIME: int = 600
+    REFRESH_TOKEN_EXPIRE_TIME: int = 1209600
+
+    model_config = ConfigDict(env_file=".env", extra="allow")
+
+
 db_settings = DBSettings()
 generic_settings = GenericSettings()
+jwt_settings = JWTSettings()
 
