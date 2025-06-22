@@ -9,7 +9,7 @@ from src.schemas.enums import UsersRoles
 class Users(OrmBase):
     __tablename__ = 'users'
     users_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
-    login: Mapped[str] = mapped_column(nullable=False, index=True)
+    login: Mapped[str] = mapped_column(nullable=False, unique=True)
     password_hash: Mapped[str] = mapped_column(nullable=False)
     role: Mapped[UsersRoles] = mapped_column(
         SAEnum(UsersRoles, name="users_role_enum", create_constraint=True),

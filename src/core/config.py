@@ -3,8 +3,8 @@ from pydantic import ConfigDict
 
 
 class DBSettings(BaseSettings):
-    DB_USER: str
-    DB_PASSWORD: str
+    DB_USER: str = "postgres"
+    DB_PASSWORD: str = "postgres"
     DB_DATABASE: str = "postgres"
     DB_HOST: str = "localhost"
     DB_PORT: int = 5432
@@ -24,10 +24,34 @@ class GenericSettings(BaseSettings):
 
 
 class JWTSettings(BaseSettings):
-    JWT_ALGORITHM: str = "HS256"
-    JWT_SECRET_KEY: str
-    ACCESS_TOKEN_EXPIRE_TIME: int = 600
-    REFRESH_TOKEN_EXPIRE_TIME: int = 1209600
+    authjwt_secret_key: str
+    authjwt_denylist_enabled: bool = True
+    authjwt_token_location: set = {"cookies"}
+    authjwt_cookie_csrf_protect: bool = False
+    authjwt_access_token_expires: int = 60 * 15  # 15 minutes
+    authjwt_refresh_token_expires: int = 60 * 60 * 24 * 7  # 7 days
+
+    model_config = ConfigDict(env_file=".env", extra="allow")
+
+
+class RedisSettings(BaseSettings):
+    REDIS_USER: str | None = None
+    REDIS_PASSWORD: str | None = None
+    REDIS_DATABASE: int = 0
+    REDIS_HOST: str = "localhost"
+    REDIS_PORT: int = 6379
+
+    @property
+    def redis_url(self):
+        if self.REDIS_USER:
+            redis_user = self.REDIS_USER
+        else:
+            redis_user = ""
+        if self.REDIS_PASSWORD:
+            redis_password = self.REDIS_PASSWORD
+        else:
+            redis_password = ""
+        return f"redis://{redis_user}:{redis_password}@{self.REDIS_HOST}:{self.REDIS_PORT}/{self.REDIS_DATABASE}"
 
     model_config = ConfigDict(env_file=".env", extra="allow")
 
@@ -35,4 +59,5 @@ class JWTSettings(BaseSettings):
 db_settings = DBSettings()
 generic_settings = GenericSettings()
 jwt_settings = JWTSettings()
+redis_settings = RedisSettings()
 
