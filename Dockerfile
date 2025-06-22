@@ -1,0 +1,25 @@
+FROM tiangolo/uvicorn-gunicorn-fastapi
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# 3. Устанавливаем рабочую директорию внутри контейнера
+WORKDIR /app
+
+# 4. Копируем файлы зависимостей
+COPY requirements.txt .
+
+# 5. Устанавливаем Python-зависимости
+RUN pip install --upgrade pip && pip install -r requirements.txt
+
+# 6. Копируем остальной код приложения
+COPY . .
+
+# 7. Создаём пользователя и переключаемся на него
+RUN useradd -m fastapi_user
+USER fastapi_user
+
+# 8. Указываем команду запуска
+CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]

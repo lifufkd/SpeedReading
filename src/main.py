@@ -3,8 +3,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
+from src.core.exceptions import register_exception_handler
 from src.database.init_db import create_tables
-from api.v1.router import api_v1_router
+from src.api.v1.router import api_v1_router
 
 
 @asynccontextmanager
@@ -24,6 +25,8 @@ middleware = CORSMiddleware(
 )
 
 app.include_router(api_v1_router, prefix="/api/v1")
+
+register_exception_handler(app)
 
 
 if __name__ == "__main__":
