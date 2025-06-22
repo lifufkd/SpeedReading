@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
-from models import Users
+from src.models.users import Users
 from src.repositories.abstract.users import UserAbstract
 
 
