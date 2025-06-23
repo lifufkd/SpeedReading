@@ -5,7 +5,7 @@ from src.schemas.enums import UsersRoles
 from src.schemas.users import UserSchema
 
 
-class UsersService:
+class SuperAdminInitService:
     def __init__(self, uow: AbstractUoW):
         self.uow = uow
 
