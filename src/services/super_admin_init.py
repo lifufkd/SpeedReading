@@ -2,7 +2,7 @@ from src.uow.abstract import AbstractUoW
 from src.core.config import generic_settings
 from src.core.jwt import get_password_hash
 from src.schemas.enums import UsersRoles
-from src.schemas.users import UserSchema
+from src.schemas.users import UserSchema, CreateUserDTO, CreateUserSchema
 
 
 class SuperAdminInitService:
@@ -17,10 +17,15 @@ class SuperAdminInitService:
             if user:
                 return None
 
-            super_admin = await uow.user_repository.add_user(
+            data = CreateUserSchema(
                 login=super_admin_login,
-                password_hash=get_password_hash(super_admin_password),
+                password=super_admin_password,
                 role=UsersRoles.ADMIN
             )
+            data = CreateUserDTO(
+                password_hash=get_password_hash(super_admin_password),
+                **data.model_dump()
+            )
+            super_admin = await uow.user_repository.add_user(data)
 
             return UserSchema.model_validate(super_admin)
