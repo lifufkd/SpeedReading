@@ -3,16 +3,12 @@ from datetime import datetime, timedelta
 from src.uow.abstract import AbstractUoW
 from src.core.redis_client import async_redis_client
 from src.schemas.users import UserSchema
-from src.core.jwt import pwd_context
+from src.core.jwt import verify_password
 
 
 class AuthService:
     def __init__(self, uow: AbstractUoW):
         self.uow = uow
-
-    @staticmethod
-    async def verify_password(plain_password: str, hashed_password: str) -> bool:
-        return pwd_context.verify(plain_password, hashed_password)
 
     @staticmethod
     async def revoke_jwt_token(decode_token: dict) -> None:
@@ -27,7 +23,7 @@ class AuthService:
             user = await uow.user_repository.get_by_name(name=username)
             if not user:
                 return None
-            if not await self.verify_password(password, user.password_hash):
+            if not verify_password(password, user.password_hash):
                 return None
 
             return UserSchema.model_validate(user)
