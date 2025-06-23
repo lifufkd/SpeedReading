@@ -8,7 +8,7 @@ from src.schemas.enums import UsersRoles
 
 class Users(OrmBase):
     __tablename__ = 'users'
-    users_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    user_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
     login: Mapped[str] = mapped_column(nullable=False, unique=True)
     password_hash: Mapped[str] = mapped_column(nullable=False)
     role: Mapped[UsersRoles] = mapped_column(
@@ -17,4 +17,4 @@ class Users(OrmBase):
     )
 
     def __repr__(self):
-        return f"<User(id={self.users_id}, login='{self.login}', password_hash='{self.password_hash}', role='{self.role}')>"
+        return f"<User(id={self.user_id}, login='{self.login}', password_hash='{self.password_hash}', role='{self.role}')>"
