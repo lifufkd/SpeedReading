@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from src.api.v1.endpoints import auth
+from src.api.v1.endpoints import auth, admin_panel
 
 api_v1_router = APIRouter()
 
@@ -7,4 +7,10 @@ api_v1_router.include_router(
     auth.router,
     prefix="/auth",
     tags=["Auth"]
+)
+
+api_v1_router.include_router(
+    admin_panel.router,
+    prefix="/admin-panel",
+    tags=["Admin panel"]
 )
