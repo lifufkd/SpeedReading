@@ -6,11 +6,13 @@ from contextlib import asynccontextmanager
 from src.core.exceptions import register_exception_handler
 from src.database.init_db import create_tables
 from src.api.v1.router import api_v1_router
+from src.core.bootstrap import create_super_admin
 
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     await create_tables()
+    await create_super_admin()
     yield
 
 

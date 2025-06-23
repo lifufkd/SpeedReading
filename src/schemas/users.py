@@ -4,7 +4,7 @@ from src.schemas.enums import UsersRoles
 
 
 class UserSchema(BaseModel):
-    users_id: int
+    user_id: int
     login: str
     password_hash: str
     role: UsersRoles
