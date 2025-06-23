@@ -1,5 +1,5 @@
 from src.database.session import get_session
-from src.services.users import UsersService
+from src.services.super_admin_init import SuperAdminInitService
 from src.uow.sqlalchemy_uow import SQLAlchemyUoW
 
 
@@ -8,7 +8,7 @@ async def create_super_admin():
     session = await anext(session_gen)
     try:
         sqlalchemy_uow = SQLAlchemyUoW(session)
-        users_service = UsersService(sqlalchemy_uow)
-        await users_service.create_super_admin()
+        super_admin_init_service = SuperAdminInitService(sqlalchemy_uow)
+        await super_admin_init_service.create_super_admin()
     except Exception as e:
         await session_gen.aclose()
