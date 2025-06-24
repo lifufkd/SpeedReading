@@ -11,7 +11,7 @@ class Users(OrmBase):
     user_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
     login: Mapped[str] = mapped_column(nullable=False, unique=True)
     password_hash: Mapped[str] = mapped_column(nullable=False)
-    email: Mapped[str] = mapped_column(unique=True, nullable=True)
+    email: Mapped[str] = mapped_column(nullable=True)
     role: Mapped[UsersRoles] = mapped_column(
         SAEnum(UsersRoles, name="users_role_enum", create_constraint=True),
         nullable=False
