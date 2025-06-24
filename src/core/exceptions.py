@@ -2,9 +2,10 @@ from fastapi import status
 
 
 class AppException(Exception):
-    def __init__(self, detail: str, status_code: int = status.HTTP_400_BAD_REQUEST):
+    def __init__(self, detail: str, status_code: int = status.HTTP_400_BAD_REQUEST, headers: dict | None = None):
         self.detail = detail
         self.status_code = status_code
+        self.headers = headers
 
 
 class UserNotFound(AppException):
@@ -25,3 +26,8 @@ class UserIsNotAdmin(AppException):
 class UserIdIsSame(AppException):
     def __init__(self):
         super().__init__(detail="Your id and requested are same, this not allowed", status_code=422)
+
+
+class JWTError(AppException):
+    def __init__(self):
+        super().__init__(detail="Invalid or expired JWT token", status_code=401, headers={"WWW-Authenticate": "Bearer"})

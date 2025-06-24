@@ -34,13 +34,13 @@ class JWTSettings(BaseSettings):
 
     # Access cookie settings
     authjwt_access_cookie_path: str = "/"
-    authjwt_access_cookie_samesite: str = "lax"
+    authjwt_access_cookie_samesite: str = "none"
     authjwt_access_cookie_secure: bool = False
     authjwt_access_cookie_max_age: int = 60 * 15  # 15 minutes
 
     # Refresh cookie settings
     authjwt_refresh_cookie_path: str = "/"
-    authjwt_refresh_cookie_samesite: str = "lax"
+    authjwt_refresh_cookie_samesite: str = "none"
     authjwt_refresh_cookie_secure: bool = False
     authjwt_refresh_cookie_max_age: int = 60 * 60 * 24 * 7  # 7 days
 

@@ -1,26 +1,31 @@
-from fastapi.exceptions import HTTPException
-from fastapi import status, Depends
+from fastapi import Depends
 from fastapi_jwt_auth import AuthJWT
 
 from src.services.auth import AuthService
 from src.dependencies.services import get_auth_service
-from src.schemas.users import UserSchema
+from src.core.exceptions import UserNotFound
+from src.dto.users import GetUsersDTO
+from src.schemas.enums import UsersRoles
+from src.core.exceptions import UserIsNotAdmin, JWTError
 
 
 async def validate_token(
         authorize: AuthJWT = Depends(),
         auth_service: AuthService = Depends(get_auth_service)
-) -> UserSchema:
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Refresh token invalid",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
+) -> GetUsersDTO:
     authorize.jwt_required()
 
-    user_name = authorize.get_jwt_subject()
-    user = await auth_service.validate_user(user_name=user_name)
+    claims = authorize.get_raw_jwt()
+    if not isinstance(claims.get('user_id'), int):
+        raise JWTError()
+
+    user = await auth_service.get_user_by_id(user_id=int(claims["user_id"]))
     if not user:
-        raise credentials_exception
+        raise UserNotFound()
 
     return user
+
+
+async def validate_admin(current_user: GetUsersDTO = Depends(validate_token)) -> None:
+    if current_user.role != UsersRoles.ADMIN:
+        raise UserIsNotAdmin()
