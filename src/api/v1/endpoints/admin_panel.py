@@ -42,7 +42,7 @@ async def update_user(
     await validate_admin(user=current_user)
     await validate_not_same_id(user=current_user, user_id=request.user_id)
 
-    user = await admin_panel_service.update_user(request)
+    user = await admin_panel_service.users_service.update_user(request)
     return user
 
 
@@ -55,7 +55,7 @@ async def delete_user(
     await validate_admin(user=current_user)
     await validate_not_same_id(user=current_user, user_id=user_id)
 
-    await admin_panel_service.delete_user(user_id)
+    await admin_panel_service.users_service.delete_user(user_id)
 
 
 
