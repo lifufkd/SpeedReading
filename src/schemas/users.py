@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, EmailStr
 from typing import Annotated, Optional
 
 from src.schemas.enums import UsersRoles
@@ -8,6 +8,7 @@ from src.validators.users_schemas import validate_password_strength
 class GetUserSchema(BaseModel):
     user_id: int
     login: str
+    email: Optional[EmailStr] = None
     role: UsersRoles
 
     class Config:
@@ -21,6 +22,7 @@ class UserSchema(GetUserSchema):
 class CreateUserSchema(BaseModel):
     login: Annotated[str, Field(min_length=3, max_length=64)]
     password: str
+    email: Optional[EmailStr] = None
     role: UsersRoles
 
     @field_validator("password")
@@ -33,6 +35,7 @@ class CreateUserSchema(BaseModel):
 class CreateUserDTO(BaseModel):
     login: Annotated[str, Field(min_length=3, max_length=64)]
     password_hash: str
+    email: Optional[EmailStr] = None
     role: UsersRoles
 
 
@@ -40,6 +43,7 @@ class UpdateUserSchema(BaseModel):
     user_id: int
     login: Annotated[Optional[str], Field(None, min_length=3, max_length=64)]
     password: Optional[str] = None
+    email: Optional[EmailStr] = None
     role: Optional[UsersRoles] = None
 
     @field_validator("password", check_fields=False)
@@ -54,5 +58,6 @@ class UpdateUserDTO(BaseModel):
     user_id: int
     login: Annotated[Optional[str], Field(None, min_length=3, max_length=64)]
     password_hash: Optional[str] = None
+    email: Optional[EmailStr] = None
     role: Optional[UsersRoles] = None
 
