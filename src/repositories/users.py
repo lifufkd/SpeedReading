@@ -36,7 +36,7 @@ class UserRepository(UserAbstract):
 
     async def add_user(self, data: CreateUserDTO) -> Users:
         new_user = Users(
-            **data.model_dump()
+            **data.model_dump(exclude_none=True)
         )
         self._session.add(new_user)
         await self._session.flush()
