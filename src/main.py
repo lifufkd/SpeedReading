@@ -9,6 +9,7 @@ from src.api.v1.router import api_v1_router
 from src.core.bootstrap import create_super_admin
 from src.core.exceptions import AppException
 from src.core.exceptions_handler import jwt_exception_handler, app_exception_handler
+from src.core.config import cors_settings
 
 
 @asynccontextmanager
@@ -22,10 +23,10 @@ app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=cors_settings.CORS_ALLOWED_ORIGINS,
+    allow_credentials=cors_settings.CORS_ALLOW_CREDENTIALS,
+    allow_methods=cors_settings.CORS_ALLOW_METHODS,
+    allow_headers=cors_settings.CORS_ALLOW_HEADERS,
 )
 
 app.include_router(api_v1_router, prefix="/api/v1")

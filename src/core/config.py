@@ -69,8 +69,16 @@ class RedisSettings(BaseSettings):
     model_config = ConfigDict(env_file=".env", extra="allow")
 
 
+class CORSSettings(BaseSettings):
+    CORS_ALLOW_CREDENTIALS = True
+    CORS_ALLOW_METHODS = ["*"]
+    CORS_ALLOW_HEADERS = ["*"]
+    CORS_ALLOWED_ORIGINS = []
+
+
 db_settings = DBSettings()
 generic_settings = GenericSettings()
 jwt_settings = JWTSettings()
 redis_settings = RedisSettings()
+cors_settings = CORSSettings()
 
