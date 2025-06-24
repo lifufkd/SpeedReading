@@ -1,14 +1,17 @@
 from datetime import datetime, timedelta
 
+from src.services.users import UsersService
 from src.uow.abstract import AbstractUoW
 from src.core.redis_client import async_redis_client
-from src.schemas.users import UserSchema
+from src.dto.users import GetUsersDTO
 from src.core.jwt import verify_password
+from src.core.orm_to_dto import sqlalchemy_to_pydantic
 
 
 class AuthService:
     def __init__(self, uow: AbstractUoW):
         self.uow = uow
+        self.users_service = UsersService(uow)
 
     @staticmethod
     async def revoke_jwt_token(decode_token: dict) -> None:
@@ -18,20 +21,23 @@ class AuthService:
 
         await async_redis_client.setex(jti, timedelta(seconds=ttl), "revoked")
 
-    async def authenticate_user(self, username: str, password: str) -> UserSchema | None:
+    async def get_user_by_id(self, user_id: int) -> GetUsersDTO | None:
         async with self.uow as uow:
-            user = await uow.user_repository.get_by_name(name=username)
-            if not user:
-                return None
-            if not verify_password(password, user.password_hash):
-                return None
-
-            return UserSchema.model_validate(user)
-
-    async def validate_user(self, user_name: str) -> UserSchema | None:
-        async with self.uow as uow:
-            user = await uow.user_repository.get_by_name(name=user_name)
+            user = await uow.user_repository.get_by_id(user_id)
             if not user:
                 return None
 
-            return UserSchema.model_validate(user)
+            user = await sqlalchemy_to_pydantic(
+                user,
+                GetUsersDTO
+            )
+            return user
+
+    async def authenticate_user(self, user_name: str, password: str) -> GetUsersDTO | None:
+        user = await self.users_service.get_user_by_name(name=user_name)
+        if not user:
+            return None
+        if not verify_password(password, user.password_hash):
+            return None
+
+        return user

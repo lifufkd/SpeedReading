@@ -1,31 +1,24 @@
 from src.uow.abstract import AbstractUoW
-from src.core.config import generic_settings
-from src.core.jwt import get_password_hash
-from src.schemas.enums import UsersRoles
-from src.schemas.users import UserSchema, CreateUserDTO, CreateUserSchema
+from src.services.users import UsersService
+from src.dto.users import GetUsersDTO, CreateUsersDTO
+from src.core.orm_to_dto import sqlalchemy_to_pydantic
 
 
 class SuperAdminInitService:
     def __init__(self, uow: AbstractUoW):
         self.uow = uow
+        self.users_service = UsersService(uow)
 
-    async def create_super_admin(self):
-        super_admin_login = generic_settings.SUPER_ADMIN_LOGIN
-        super_admin_password = generic_settings.SUPER_ADMIN_PASSWORD
+    async def create_super_admin(self, user_name: str, data: CreateUsersDTO) -> GetUsersDTO | None:
         async with self.uow as uow:
-            user = await uow.user_repository.get_by_name(name=super_admin_login)
+            user = await self.users_service.get_user_by_name(name=user_name)
             if user:
                 return None
 
-            data = CreateUserSchema(
-                login=super_admin_login,
-                password=super_admin_password,
-                role=UsersRoles.ADMIN
-            )
-            data = CreateUserDTO(
-                password_hash=get_password_hash(super_admin_password),
-                **data.model_dump()
-            )
             super_admin = await uow.user_repository.add_user(data)
+            super_admin = await sqlalchemy_to_pydantic(
+                super_admin,
+                GetUsersDTO
+            )
 
-            return UserSchema.model_validate(super_admin)
+            return super_admin

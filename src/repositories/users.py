@@ -1,9 +1,9 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, update
+from sqlalchemy import select
 
 from src.models.users import Users
 from src.repositories.abstract.users import UserAbstract
-from src.schemas.users import UpdateUserDTO, CreateUserDTO
+from src.dto.users import UpdateUsersDTO, CreateUsersDTO
 
 
 class UserRepository(UserAbstract):
@@ -34,7 +34,7 @@ class UserRepository(UserAbstract):
         user = result.scalar_one_or_none()
         return user
 
-    async def add_user(self, data: CreateUserDTO) -> Users:
+    async def add_user(self, data: CreateUsersDTO) -> Users:
         new_user = Users(
             **data.model_dump(exclude_none=True)
         )
@@ -44,12 +44,12 @@ class UserRepository(UserAbstract):
 
         return new_user
 
-    async def update_user(self, data: UpdateUserDTO) -> Users | None:
-        user = await self.get_by_id(data.user_id)
+    async def update_user(self, user_id: int, data: UpdateUsersDTO) -> Users | None:
+        user = await self.get_by_id(user_id)
         if not user:
             return None
 
-        for field, value in data.model_dump(exclude_none=True, exclude={"user_id"}).items():
+        for field, value in data.model_dump(exclude_none=True).items():
             setattr(user, field, value)
 
         await self._session.flush()
