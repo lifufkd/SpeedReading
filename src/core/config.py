@@ -24,12 +24,25 @@ class GenericSettings(BaseSettings):
 
 
 class JWTSettings(BaseSettings):
+    # Generic jwt settings
     authjwt_secret_key: str
     authjwt_denylist_enabled: bool = True
     authjwt_token_location: set = {"cookies"}
     authjwt_cookie_csrf_protect: bool = False
     authjwt_access_token_expires: int = 60 * 15  # 15 minutes
     authjwt_refresh_token_expires: int = 60 * 60 * 24 * 7  # 7 days
+
+    # Access cookie settings
+    authjwt_access_cookie_path: str = "/"
+    authjwt_access_cookie_samesite: str = "lax"
+    authjwt_access_cookie_secure: bool = False
+    authjwt_access_cookie_max_age: int = 60 * 15  # 15 minutes
+
+    # Refresh cookie settings
+    authjwt_refresh_cookie_path: str = "/"
+    authjwt_refresh_cookie_samesite: str = "lax"
+    authjwt_refresh_cookie_secure: bool = False
+    authjwt_refresh_cookie_max_age: int = 60 * 60 * 24 * 7  # 7 days
 
     model_config = ConfigDict(env_file=".env", extra="allow")
 
