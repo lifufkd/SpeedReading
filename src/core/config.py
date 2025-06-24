@@ -18,7 +18,7 @@ class DBSettings(BaseSettings):
 
 class GenericSettings(BaseSettings):
     SUPER_ADMIN_LOGIN: str = "admin"
-    SUPER_ADMIN_PASSWORD: str = "admin"
+    SUPER_ADMIN_PASSWORD: str = "Admin123@"
 
     model_config = ConfigDict(env_file=".env", extra="allow")
 
