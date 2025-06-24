@@ -3,11 +3,13 @@ from src.core.jwt import get_password_hash
 from src.schemas.users import GetUserSchema, UpdateUserSchema, UpdateUserDTO, CreateUserDTO
 from src.core.exceptions import UserAlreadyExists, UserNotFound
 from src.schemas.users import CreateUserSchema
+from src.services.users_service import UsersService
 
 
 class AdminPanelService:
     def __init__(self, uow: AbstractUoW):
         self.uow = uow
+        self.users_service = UsersService(uow)
 
     async def get_all_users(self) -> list[GetUserSchema]:
         async with self.uow as uow:
@@ -28,21 +30,3 @@ class AdminPanelService:
             new_user = await uow.user_repository.add_user(data)
 
             return GetUserSchema.model_validate(new_user)
-
-    async def update_user(self, data: UpdateUserSchema) -> GetUserSchema:
-        async with self.uow as uow:
-            data = UpdateUserDTO(
-                password_hash=get_password_hash(data.password) if data.password else None,
-                **data.model_dump()
-            )
-            user = await uow.user_repository.update_user(data=data)
-            if not user:
-                raise UserNotFound()
-
-            return GetUserSchema.model_validate(user)
-
-    async def delete_user(self, user_id: int) -> None:
-        async with self.uow as uow:
-            user = await uow.user_repository.delete_user(user_id=user_id)
-            if not user:
-                raise UserNotFound()
