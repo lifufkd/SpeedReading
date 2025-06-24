@@ -70,10 +70,10 @@ class RedisSettings(BaseSettings):
 
 
 class CORSSettings(BaseSettings):
-    CORS_ALLOW_CREDENTIALS = True
-    CORS_ALLOW_METHODS = ["*"]
-    CORS_ALLOW_HEADERS = ["*"]
-    CORS_ALLOWED_ORIGINS = []
+    CORS_ALLOW_CREDENTIALS: bool = True
+    CORS_ALLOW_METHODS: list[str] = ["*"]
+    CORS_ALLOW_HEADERS: list[str] = ["*"]
+    CORS_ALLOWED_ORIGINS: list[str] = []
 
 
 db_settings = DBSettings()
