@@ -3,23 +3,23 @@ FROM python:3.11-slim
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     libpq-dev \
+    dos2unix \
+    postgresql-client \
     && rm -rf /var/lib/apt/lists/*
 
-# 3. Устанавливаем рабочую директорию внутри контейнера
 WORKDIR /app
 
-# 4. Копируем файлы зависимостей
 COPY requirements.txt .
+COPY entrypoint.sh .
 
-# 5. Устанавливаем Python-зависимости
+# Приводим к UNIX-формату и даём права на исполнение
+RUN chmod +x entrypoint.sh
+
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
-# 6. Копируем остальной код приложения
 COPY . .
 
-# 7. Создаём пользователя и переключаемся на него
 RUN useradd -m fastapi_user
 USER fastapi_user
 
-# Указываем точку входа
-CMD ["./entrypoint.sh"]
+ENTRYPOINT ["./entrypoint.sh"]
