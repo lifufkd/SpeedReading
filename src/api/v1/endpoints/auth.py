@@ -9,11 +9,13 @@ from src.core import jwt # noqa
 from src.services.auth import AuthService
 from src.dependencies.services import get_auth_service
 from src.core.exceptions import UserNotFound
+from src.core.dto_to_schema import dto_to_schema
+from src.schemas.users.auth import UserSchema
 
 router = APIRouter()
 
 
-@router.post("/login", status_code=status.HTTP_200_OK, response_model=dict)
+@router.post("/login", status_code=status.HTTP_200_OK, response_model=UserSchema)
 async def login(
         request: Annotated[OAuth2PasswordRequestForm, Depends()],
         authorize: AuthJWT = Depends(),
@@ -31,10 +33,15 @@ async def login(
 
     authorize.set_access_cookies(access_token)
     authorize.set_refresh_cookies(refresh_token)
-    return {"msg": "Login successful"}
+
+    user = await dto_to_schema(
+        user,
+        UserSchema
+    )
+    return user
 
 
-@router.post("/refresh", status_code=status.HTTP_200_OK, response_model=dict)
+@router.post("/refresh", status_code=status.HTTP_200_OK, response_model=UserSchema)
 async def refresh(
         authorize: AuthJWT = Depends(),
         auth_service: AuthService = Depends(get_auth_service)
@@ -54,7 +61,12 @@ async def refresh(
 
     authorize.set_access_cookies(new_access)
     authorize.set_refresh_cookies(new_refresh)
-    return {"msg": "Token successfully refreshed"}
+
+    user = await dto_to_schema(
+        user,
+        UserSchema
+    )
+    return user
 
 
 @router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
