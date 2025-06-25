@@ -1,6 +1,3 @@
-from alembic import command as alembic_runner
-from alembic.config import Config
-
 from src.database.session import get_session
 from src.services.super_admin_init import SuperAdminInitService
 from src.uow.sqlalchemy_uow import SQLAlchemyUoW
@@ -30,8 +27,3 @@ async def create_super_admin():
         )
     finally:
         await session_gen.aclose()
-
-
-async def apply_migrations():
-    alembic_cfg = Config("alembic.ini")
-    alembic_runner.upgrade(alembic_cfg, "head")
