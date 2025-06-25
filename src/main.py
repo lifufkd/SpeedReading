@@ -6,7 +6,7 @@ from fastapi_jwt_auth.exceptions import AuthJWTException
 
 from src.database.init_db import create_tables
 from src.api.v1.router import api_v1_router
-from src.core.bootstrap import create_super_admin, apply_migrations
+from src.core.bootstrap import create_super_admin
 from src.core.exceptions import AppException
 from src.core.exceptions_handler import jwt_exception_handler, app_exception_handler
 from src.core.config import cors_settings
@@ -15,7 +15,6 @@ from src.core.config import cors_settings
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     await create_tables()
-    await apply_migrations()
     await create_super_admin()
     yield
 

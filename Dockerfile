@@ -1,10 +1,5 @@
 FROM python:3.11-slim
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    libpq-dev \
-    && rm -rf /var/lib/apt/lists/*
-
 # 3. Устанавливаем рабочую директорию внутри контейнера
 WORKDIR /app
 
@@ -21,5 +16,5 @@ COPY . .
 RUN useradd -m fastapi_user
 USER fastapi_user
 
-# 8. Указываем команду запуска
-CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Указываем точку входа
+CMD ["./entrypoint.sh"]
