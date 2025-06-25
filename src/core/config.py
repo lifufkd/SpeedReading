@@ -10,8 +10,12 @@ class DBSettings(BaseSettings):
     DB_PORT: int = 5432
 
     @property
-    def postgresql_url(self) -> str:
+    def async_postgresql_url(self) -> str:
         return f"postgresql+asyncpg://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_DATABASE}"
+
+    @property
+    def sync_postgresql_url(self) -> str:
+        return f"postgresql+psycopg2://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_DATABASE}"
 
     model_config = ConfigDict(env_file=".env", extra="allow")
 

@@ -17,7 +17,7 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-config.set_main_option('sqlalchemy.url', db_settings.postgresql_url + "?async_fallback=True")
+config.set_main_option('sqlalchemy.url', db_settings.sync_postgresql_url)
 
 
 # add your model's MetaData object here
