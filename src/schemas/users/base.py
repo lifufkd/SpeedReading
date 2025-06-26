@@ -1,5 +1,6 @@
 from pydantic import BaseModel, field_validator, EmailStr
 from typing import Optional
+from datetime import datetime
 
 from src.validators.users_schemas import validate_password_strength
 from src.schemas.enums import UsersRoles
@@ -10,6 +11,8 @@ class UserSchemaBase(BaseModel):
     login: str
     email: Optional[EmailStr]
     role: UsersRoles
+    created_at: datetime
+    updated_at: datetime
 
 
 class PasswordValidatorBase(BaseModel):

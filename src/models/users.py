@@ -2,11 +2,12 @@ from sqlalchemy import BigInteger
 from sqlalchemy import Enum as SAEnum
 from sqlalchemy.orm import Mapped, mapped_column
 
+from src.database.base_mixins import TimestampMixin
 from src.database.base import OrmBase
 from src.schemas.enums import UsersRoles
 
 
-class Users(OrmBase):
+class Users(OrmBase, TimestampMixin):
     __tablename__ = 'users'
     user_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
     login: Mapped[str] = mapped_column(nullable=False, unique=True)
@@ -18,4 +19,4 @@ class Users(OrmBase):
     )
 
     def __repr__(self):
-        return f"<User(id={self.user_id}, login='{self.login}', password_hash='{self.password_hash}', role='{self.role}')>"
+        return f"<User(id='{self.user_id}', login='{self.login}', password_hash='{self.password_hash}', role='{self.role}')>"

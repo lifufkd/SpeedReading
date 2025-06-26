@@ -1,5 +1,6 @@
 from pydantic import BaseModel, EmailStr
 from typing import Optional
+from datetime import datetime
 
 from src.schemas.enums import UsersRoles
 
@@ -10,6 +11,8 @@ class GetUsersDTO(BaseModel):
     password_hash: str
     email: Optional[EmailStr] = None
     role: UsersRoles
+    created_at: datetime
+    updated_at: datetime
 
 
 class UpdateUsersDTO(BaseModel):
