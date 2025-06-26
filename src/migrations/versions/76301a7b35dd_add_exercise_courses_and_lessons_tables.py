@@ -1,8 +1,8 @@
 """add 'exercise', 'courses' and 'lessons' tables
 
-Revision ID: 16d023cfb901
+Revision ID: 76301a7b35dd
 Revises: 2d97307e1931
-Create Date: 2025-06-26 20:07:45.561842
+Create Date: 2025-06-26 20:40:20.509070
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '16d023cfb901'
+revision: str = '76301a7b35dd'
 down_revision: Union[str, Sequence[str], None] = '2d97307e1931'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None

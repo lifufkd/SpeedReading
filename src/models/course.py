@@ -11,9 +11,11 @@ class Courses(OrmBase, TimestampMixin):
     title: Mapped[str] = mapped_column(nullable=False)
 
     lessons: Mapped[list["Lessons"]] = relationship(
+        back_populates="courses",
         secondary="lessons_courses"
     )
     exercises: Mapped[list["Exercises"]] = relationship(
+        back_populates="courses",
         secondary="exercises_courses"
     )
 

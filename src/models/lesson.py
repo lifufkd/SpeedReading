@@ -11,7 +11,12 @@ class Lessons(OrmBase, TimestampMixin):
     title: Mapped[str] = mapped_column(nullable=False)
 
     exercises: Mapped[list["Exercises"]] = relationship(
+        back_populates="lessons",
         secondary="exercises_lessons"
+    )
+    courses: Mapped[list["Courses"]] = relationship(
+        back_populates="lessons",
+        secondary="lessons_courses"
     )
 
     def __repr__(self):
