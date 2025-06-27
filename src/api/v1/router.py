@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from src.api.v1.endpoints import auth, profile
-from src.api.v1.endpoints.admin import admin_panel, exercise
+from src.api.v1.endpoints.admin import admin_panel, exercise, lesson
 
 api_v1_router = APIRouter()
 
@@ -26,4 +26,10 @@ api_v1_router.include_router(
     exercise.router,
     prefix="/admin/exercise",
     tags=["Exercise"]
+)
+
+api_v1_router.include_router(
+    lesson.router,
+    prefix="/admin/lesson",
+    tags=["Lesson"]
 )

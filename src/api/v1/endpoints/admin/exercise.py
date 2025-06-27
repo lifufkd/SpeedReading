@@ -1,6 +1,6 @@
 from fastapi import APIRouter, status, Depends, Body, Path
 
-import src.schemas.exercises # noqa
+import src.schemas.learning # noqa
 import src.dto # noqa
 from src.services.learning.exercise import ExerciseService
 from src.dependencies.security import validate_token, validate_admin
@@ -32,13 +32,13 @@ async def get_exercises(
         exercise_service: ExerciseService = Depends(get_exercise_service)
 ):
 
-    new_users = await exercise_service.get_all()
-    new_users = await many_dto_to_schema(
-        new_users,
+    exercises = await exercise_service.get_all()
+    exercises = await many_dto_to_schema(
+        exercises,
         ExerciseNestedSchema
     )
 
-    return new_users
+    return exercises
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=ExerciseSchema)
