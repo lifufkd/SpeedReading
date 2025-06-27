@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 from src.models.exercise import Exercises
-from src.dto.exercises import CreateExerciseDTO
+from src.dto.exercises import CreateExerciseDTO, UpdateExerciseDTO
 
 
 class ExerciseAbstract(ABC):
@@ -19,7 +19,11 @@ class ExerciseAbstract(ABC):
         pass
 
     @abstractmethod
-    async def add(self, data: CreateExerciseDTO) -> Exercises:
+    async def get_by_ids(self, exercises_ids: list[int]) -> list[Exercises]:
+        pass
+
+    @abstractmethod
+    async def update(self, exercise_id: int, data: UpdateExerciseDTO) -> Exercises | None:
         pass
 
     @abstractmethod
