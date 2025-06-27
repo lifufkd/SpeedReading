@@ -68,9 +68,9 @@ class LessonService:
 
             for exercise in exercises:
                 if exercise.exercise_id in data.add_exercises_ids:
-                    lesson.lessons.append(exercise)
+                    lesson.exercises.append(exercise)
                 elif exercise.exercise_id in data.delete_exercises_ids:
-                    lesson.lessons.remove(exercise)
+                    lesson.exercises.remove(exercise)
 
             uow.flush()
 
