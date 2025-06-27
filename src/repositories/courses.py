@@ -24,6 +24,8 @@ class CourseRepository(CoursesAbstract):
     async def get_by_id(self, course_id: int) -> Courses:
         query = (
             select(Courses)
+            .options(selectinload(Courses.exercises))
+            .options(selectinload(Courses.lessons))
             .where(Courses.course_id == course_id)
         )
         result = await self._session.execute(query)

@@ -84,7 +84,7 @@ async def delete_exercise(
     await exercise_service.delete(exercise_id)
 
 
-@router.put("/{exercise_id}/lessons", status_code=status.HTTP_200_OK, response_model=ExerciseNestedSchema)
+@router.patch("/{exercise_id}/lessons", status_code=status.HTTP_200_OK, response_model=ExerciseNestedSchema)
 async def update_exercise_to_lessons(
         exercise_id: int = Path(),
         request: UpdateExerciseLessonsSchema = Body(),
@@ -102,7 +102,7 @@ async def update_exercise_to_lessons(
     return exercise
 
 
-@router.put("/{exercise_id}/courses", status_code=status.HTTP_200_OK, response_model=ExerciseNestedSchema)
+@router.patch("/{exercise_id}/courses", status_code=status.HTTP_200_OK, response_model=ExerciseNestedSchema)
 async def update_exercise_to_courses(
         exercise_id: int = Path(),
         request: UpdateExerciseCoursesSchema = Body(),

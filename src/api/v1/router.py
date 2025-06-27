@@ -12,7 +12,7 @@ api_v1_router.include_router(
 
 api_v1_router.include_router(
     admin_panel.router,
-    prefix="/admin-panel",
+    prefix="/admin/admin-panel",
     tags=["Admin panel"]
 )
 
