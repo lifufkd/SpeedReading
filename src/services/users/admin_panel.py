@@ -1,6 +1,6 @@
 from src.uow.abstract import AbstractUoW
 from src.core.exceptions import UserAlreadyExists
-from src.services.users import UsersService
+from src.services.users.users import UsersService
 from src.core.orm_to_dto import many_sqlalchemy_to_pydantic
 from src.dto.users import GetUsersDTO, CreateUsersDTO
 from src.core.orm_to_dto import sqlalchemy_to_pydantic

@@ -1,9 +1,9 @@
 from fastapi import Depends
 
-from src.services.exercise import ExerciseService
-from src.services.auth import AuthService
-from src.services.admin_panel import AdminPanelService
-from src.services.profile import ProfileService
+from src.services.learning.exercise import ExerciseService
+from src.services.auth.auth import AuthService
+from src.services.users.admin_panel import AdminPanelService
+from src.services.users.profile import ProfileService
 from src.uow.abstract import AbstractUoW
 from src.dependencies.uow import get_uow
 

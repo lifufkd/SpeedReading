@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 
-from src.services.users import UsersService
+from src.services.users.users import UsersService
 from src.uow.abstract import AbstractUoW
 from src.core.redis_client import async_redis_client
 from src.dto.users import GetUsersDTO

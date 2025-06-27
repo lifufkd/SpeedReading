@@ -2,7 +2,7 @@ from fastapi import APIRouter, status, Depends, Body, Path
 
 import src.schemas.exercises # noqa
 import src.dto # noqa
-from src.services.exercise import ExerciseService
+from src.services.learning.exercise import ExerciseService
 from src.dependencies.security import validate_token, validate_admin
 from src.dependencies.services import get_exercise_service
 from src.dto.exercises import (
@@ -12,7 +12,7 @@ from src.dto.exercises import (
     UpdateExerciseCoursesDTO
 )
 from src.core.dto_to_schema import many_dto_to_schema, dto_to_schema
-from src.schemas.exercises.exercise import (
+from src.schemas.learning.exercise import (
     ExerciseNestedSchema,
     CreateExerciseSchema,
     ExerciseSchema,

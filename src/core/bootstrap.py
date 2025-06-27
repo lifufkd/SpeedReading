@@ -1,5 +1,5 @@
 from src.database.session import get_session
-from src.services.super_admin_init import SuperAdminInitService
+from src.services.users.super_admin_init import SuperAdminInitService
 from src.uow.sqlalchemy_uow import SQLAlchemyUoW
 from src.core.config import generic_settings
 from src.dto.users import CreateUsersDTO

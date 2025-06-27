@@ -1,6 +1,6 @@
 from fastapi import APIRouter, status, Depends, Body, Query
 
-from src.services.admin_panel import AdminPanelService
+from src.services.users.admin_panel import AdminPanelService
 from src.dependencies.security import validate_token, validate_admin
 from src.dependencies.services import get_admin_panel_service
 from src.validators.users import validate_not_same_id

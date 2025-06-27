@@ -1,7 +1,7 @@
 from fastapi import Depends
 from fastapi_jwt_auth import AuthJWT
 
-from src.services.auth import AuthService
+from src.services.auth.auth import AuthService
 from src.dependencies.services import get_auth_service
 from src.core.exceptions import UserNotFound
 from src.dto.users import GetUsersDTO

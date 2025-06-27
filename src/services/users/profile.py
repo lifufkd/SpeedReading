@@ -1,5 +1,5 @@
 from src.uow.abstract import AbstractUoW
-from src.services.users import UsersService
+from src.services.users.users import UsersService
 
 
 class ProfileService:

@@ -6,7 +6,7 @@ from fastapi.security.oauth2 import OAuth2PasswordRequestForm
 from typing import Annotated
 
 from src.core import jwt # noqa
-from src.services.auth import AuthService
+from src.services.auth.auth import AuthService
 from src.dependencies.services import get_auth_service
 from src.core.exceptions import UserNotFound
 from src.core.dto_to_schema import dto_to_schema

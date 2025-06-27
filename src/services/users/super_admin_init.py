@@ -1,5 +1,5 @@
 from src.uow.abstract import AbstractUoW
-from src.services.users import UsersService
+from src.services.users.users import UsersService
 from src.dto.users import GetUsersDTO, CreateUsersDTO
 from src.core.orm_to_dto import sqlalchemy_to_pydantic
 

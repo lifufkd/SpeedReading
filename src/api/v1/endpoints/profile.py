@@ -2,7 +2,7 @@ from fastapi import APIRouter, status, Depends, Body
 
 from src.dependencies.security import validate_token
 from src.dependencies.services import get_profile_service
-from src.services.profile import ProfileService
+from src.services.users.profile import ProfileService
 from src.schemas.users.profile import UpdateProfileSchema, UserSchema
 from src.dto.users import GetUsersDTO, UpdateUsersDTO
 from src.core.jwt import get_password_hash
