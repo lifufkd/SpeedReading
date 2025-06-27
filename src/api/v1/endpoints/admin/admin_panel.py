@@ -1,4 +1,4 @@
-from fastapi import APIRouter, status, Depends, Body, Query
+from fastapi import APIRouter, status, Depends, Body, Path
 
 from src.services.users.admin_panel import AdminPanelService
 from src.dependencies.security import validate_token, validate_admin
@@ -47,9 +47,9 @@ async def create_user(
     return new_user
 
 
-@router.patch("/user", status_code=status.HTTP_200_OK, response_model=UserSchema)
+@router.patch("/user/{user_id}", status_code=status.HTTP_200_OK, response_model=UserSchema)
 async def update_user(
-        user_id: int = Query(),
+        user_id: int = Path(),
         request: UpdateUserSchema = Body(),
         current_user: GetUsersDTO = Depends(validate_token),
         admin_panel_service: AdminPanelService = Depends(get_admin_panel_service),
@@ -69,9 +69,9 @@ async def update_user(
     return user
 
 
-@router.delete("/user", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/user/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_user(
-        user_id: int = Query(),
+        user_id: int = Path(),
         current_user: GetUsersDTO = Depends(validate_token),
         admin_panel_service: AdminPanelService = Depends(get_admin_panel_service),
 ):

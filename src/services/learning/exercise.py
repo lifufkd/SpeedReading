@@ -1,3 +1,5 @@
+from functools import partial
+
 from src.uow.abstract import AbstractUoW
 from src.core.exceptions import ExerciseNotFound, LessonsNotFound, CoursesNotFound
 from src.core.orm_to_dto import many_sqlalchemy_to_pydantic
@@ -10,6 +12,7 @@ from src.dto.exercises import (
     UpdateExerciseLessonsDTO,
     UpdateExerciseCoursesDTO
 )
+from src.validators.common import is_number_in_list, is_number_not_in_list
 
 
 class ExerciseService:
@@ -29,19 +32,6 @@ class ExerciseService:
 
             return exercise
 
-    async def get_by_ids(self, exercises_ids: list[int]) -> list[GetExercisesDTO] | None:
-        async with self.uow as uow:
-            exercises = await uow.exercise_repository.get_by_ids(exercises_ids)
-            if not exercises:
-                return None
-
-            exercises = await many_sqlalchemy_to_pydantic(
-                exercises,
-                GetExercisesDTO
-            )
-
-            return exercises
-
     async def get_all(self) -> list[GetNestedExercisesDTO]:
         async with self.uow as uow:
             exercises = await uow.exercise_repository.get_all()
@@ -57,6 +47,7 @@ class ExerciseService:
             exercise = await uow.exercise_repository.get_by_id(exercise_id)
             if not exercise:
                 raise ExerciseNotFound()
+            existed_lessons_ids = [lesson.lesson_id for lesson in exercise.lessons]
 
             lessons = await uow.lesson_repository.get_by_ids(data.add_lessons_ids + data.delete_lessons_ids)
             if not lessons:
@@ -66,13 +57,18 @@ class ExerciseService:
             if missing_lessons_ids:
                 raise LessonsNotFound(missing_lessons_ids)
 
+            data.add_lessons_ids = list(
+                filter(partial(is_number_not_in_list, list_=existed_lessons_ids), data.add_lessons_ids))
+            data.delete_lessons_ids = list(
+                filter(partial(is_number_in_list, list_=existed_lessons_ids), data.delete_lessons_ids))
+
             for lesson in lessons:
                 if lesson.lesson_id in data.add_lessons_ids:
                     exercise.lessons.append(lesson)
                 elif lesson.lesson_id in data.delete_lessons_ids:
                     exercise.lessons.remove(lesson)
 
-            uow.flush()
+            await uow.flush()
 
             exercise = await sqlalchemy_to_pydantic(
                 exercise,
@@ -86,6 +82,7 @@ class ExerciseService:
             exercise = await uow.exercise_repository.get_by_id(exercise_id)
             if not exercise:
                 raise ExerciseNotFound()
+            existed_courses_ids = [course.course_id for course in exercise.courses]
 
             courses = await uow.course_repository.get_by_ids(data.add_courses_ids + data.delete_courses_ids)
             founded_courses_ids = {course.course_id for course in courses}
@@ -93,13 +90,18 @@ class ExerciseService:
             if missing_courses_ids:
                 raise CoursesNotFound(missing_courses_ids)
 
+            data.add_courses_ids = list(
+                filter(partial(is_number_not_in_list, list_=existed_courses_ids), data.add_courses_ids))
+            data.delete_courses_ids = list(
+                filter(partial(is_number_in_list, list_=existed_courses_ids), data.delete_courses_ids))
+
             for course in courses:
                 if course.course_id in data.add_courses_ids:
                     exercise.courses.append(course)
                 elif course.course_id in data.delete_courses_ids:
                     exercise.courses.remove(course)
 
-            uow.flush()
+            await uow.flush()
 
             exercise = await sqlalchemy_to_pydantic(
                 exercise,
