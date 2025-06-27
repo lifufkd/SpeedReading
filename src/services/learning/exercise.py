@@ -24,10 +24,23 @@ class ExerciseService:
 
             exercise = await sqlalchemy_to_pydantic(
                 exercise,
-                GetNestedExercisesDTO
+                GetExercisesDTO
             )
 
             return exercise
+
+    async def get_by_ids(self, exercises_ids: list[int]) -> list[GetExercisesDTO] | None:
+        async with self.uow as uow:
+            exercises = await uow.exercise_repository.get_by_ids(exercises_ids)
+            if not exercises:
+                return None
+
+            exercises = await many_sqlalchemy_to_pydantic(
+                exercises,
+                GetExercisesDTO
+            )
+
+            return exercises
 
     async def get_all(self) -> list[GetNestedExercisesDTO]:
         async with self.uow as uow:
@@ -45,7 +58,9 @@ class ExerciseService:
             if not exercise:
                 raise ExerciseNotFound()
 
-            lessons = await uow.lessons_repository.get_by_ids(data.add_lessons_ids + data.delete_lessons_ids)
+            lessons = await uow.lesson_repository.get_by_ids(data.add_lessons_ids + data.delete_lessons_ids)
+            if not lessons:
+                raise LessonsNotFound(data.add_lessons_ids + data.delete_lessons_ids)
             founded_lessons_ids = {lesson.lesson_id for lesson in lessons}
             missing_lessons_ids = list(set(data.add_lessons_ids + data.delete_lessons_ids) - founded_lessons_ids)
             if missing_lessons_ids:
@@ -72,8 +87,8 @@ class ExerciseService:
             if not exercise:
                 raise ExerciseNotFound()
 
-            courses = await uow.courses_repository.get_by_ids(data.add_courses_ids + data.delete_courses_ids)
-            founded_courses_ids = {course.lesson_id for course in courses}
+            courses = await uow.course_repository.get_by_ids(data.add_courses_ids + data.delete_courses_ids)
+            founded_courses_ids = {course.course_id for course in courses}
             missing_courses_ids = list(set(data.add_courses_ids + data.delete_courses_ids) - founded_courses_ids)
             if missing_courses_ids:
                 raise CoursesNotFound(missing_courses_ids)
@@ -117,6 +132,6 @@ class ExerciseService:
 
     async def delete(self, exercise_id: int) -> None:
         async with self.uow as uow:
-            user = await uow.exercise_repository.delete(exercise_id)
-            if not user:
+            exercise = await uow.exercise_repository.delete(exercise_id)
+            if not exercise:
                 raise ExerciseNotFound()

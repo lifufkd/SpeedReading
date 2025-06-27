@@ -42,15 +42,27 @@ class JWTError(AppException):
 
 
 class ExerciseNotFound(AppException):
-    def __init__(self):
-        super().__init__(detail="Exercise not found", status_code=404)
+    def __init__(self, exercises_ids: list[int] | None = None):
+        if exercises_ids:
+            msg = f"Exercises with ids:({','.join(map(str, exercises_ids))}) not found"
+        else:
+            msg = "Exercises not found"
+        super().__init__(detail=msg, status_code=404)
 
 
 class LessonsNotFound(AppException):
-    def __init__(self, lessons_ids: list[int]):
-        super().__init__(detail=f"Lessons with ids:({','.join(map(str, lessons_ids))}) not found", status_code=404)
+    def __init__(self, lessons_ids: list[int] | None = None):
+        if lessons_ids:
+            msg = f"Lessons with ids:({','.join(map(str, lessons_ids))}) not found"
+        else:
+            msg = "Lessons not found"
+        super().__init__(detail=msg, status_code=404)
 
 
 class CoursesNotFound(AppException):
-    def __init__(self, courses_ids: list[int]):
-        super().__init__(detail=f"Courses with ids:({','.join(map(str, courses_ids))}) not found", status_code=404)
+    def __init__(self, courses_ids: list[int] | None = None):
+        if courses_ids:
+            msg = f"Courses with ids:({','.join(map(str, courses_ids))}) not found"
+        else:
+            msg = "Course not found"
+        super().__init__(detail=msg, status_code=404)

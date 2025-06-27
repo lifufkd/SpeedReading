@@ -30,6 +30,14 @@ class ExerciseRepository(ExerciseAbstract):
         exercise = result.scalar_one_or_none()
         return exercise
 
+    async def get_by_ids(self, exercises_ids: list[int]) -> list[Exercises]:
+        query = (
+            select(Exercises)
+            .filter(Exercises.exercise_id.in_(exercises_ids))
+        )
+        result = await self._session.execute(query)
+        return list(result.scalars().all())
+
     async def add(self, data: CreateExerciseDTO) -> Exercises:
         new_exercise = Exercises(
             **data.model_dump()
