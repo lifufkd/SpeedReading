@@ -31,3 +31,18 @@ class UserIdIsSame(AppException):
 class JWTError(AppException):
     def __init__(self):
         super().__init__(detail="Invalid or expired JWT token", status_code=401, headers={"WWW-Authenticate": "Bearer"})
+
+
+class ExerciseNotFound(AppException):
+    def __init__(self):
+        super().__init__(detail="Exercise not found", status_code=404)
+
+
+class LessonsNotFound(AppException):
+    def __init__(self, lessons_ids: list[int]):
+        super().__init__(detail=f"Lessons with ids:({','.join(map(str, lessons_ids))}) not found", status_code=404)
+
+
+class CoursesNotFound(AppException):
+    def __init__(self, courses_ids: list[int]):
+        super().__init__(detail=f"Courses with ids:({','.join(map(str, courses_ids))}) not found", status_code=404)

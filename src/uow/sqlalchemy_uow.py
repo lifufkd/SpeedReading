@@ -2,12 +2,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.uow.abstract import AbstractUoW
 from src.repositories.users import UserRepository
+from src.repositories.exercises import ExerciseRepository
 
 
 class SQLAlchemyUoW(AbstractUoW):
     def __init__(self, session: AsyncSession):
         self._session = session
-        self.user_repository = UserRepository(self._session)
+        self.user_repository = UserRepository(session)
+        self.exercise_repository = ExerciseRepository(session)
 
     async def __aenter__(self):
         return self
@@ -20,6 +22,9 @@ class SQLAlchemyUoW(AbstractUoW):
 
     async def commit(self):
         await self._session.commit()
+
+    async def flush(self):
+        await self._session.flush()
 
     async def rollback(self):
         await self._session.rollback()
