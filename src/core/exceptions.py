@@ -28,12 +28,12 @@ class UserAlreadyExists(AppException):
 
 class UserIsNotAdmin(AppException):
     def __init__(self):
-        super().__init__(detail="User is not admin", status_code=403)
+        super().__init__(detail="Operation not allowed", status_code=403)
 
 
 class UserIdIsSame(AppException):
     def __init__(self):
-        super().__init__(detail="Your id and requested are same, this not allowed", status_code=422)
+        super().__init__(detail="Your id and requested are same, operation not allowed", status_code=422)
 
 
 class JWTError(AppException):
