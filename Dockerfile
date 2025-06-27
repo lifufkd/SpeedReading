@@ -9,17 +9,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
+COPY . .
 COPY requirements.txt .
 COPY entrypoint.sh .
 
 # Приводим к UNIX-формату и даём права на исполнение
-RUN chmod +x entrypoint.sh
+RUN dos2unix ./entrypoint.sh
+RUN chmod +x ./entrypoint.sh
 
 RUN pip install --upgrade pip && pip install -r requirements.txt
-
-COPY . .
-
-RUN useradd -m fastapi_user
-USER fastapi_user
 
 ENTRYPOINT ["./entrypoint.sh"]
