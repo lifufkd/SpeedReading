@@ -52,7 +52,7 @@ async def refresh(
     await auth_service.revoke_jwt_token(decoded_jwt)
 
     user_name = authorize.get_jwt_subject()
-    user = await auth_service.users_service.get_user_by_name(name=user_name)
+    user = await auth_service.users_service.get_by_name(name=user_name)
     if not user:
         raise UserNotFound()
 

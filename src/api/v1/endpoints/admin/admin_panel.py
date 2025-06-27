@@ -60,7 +60,7 @@ async def update_user(
         password_hash=get_password_hash(request.password) if request.password else None,
         **request.model_dump()
     )
-    user = await admin_panel_service.users_service.update_user(user_id=user_id, data=data)
+    user = await admin_panel_service.users_service.update(user_id=user_id, data=data)
     user = await dto_to_schema(
         user,
         UserSchema
@@ -77,7 +77,7 @@ async def delete_user(
 ):
     await validate_not_same_id(user=current_user, user_id=user_id)
 
-    await admin_panel_service.users_service.delete_user(user_id)
+    await admin_panel_service.users_service.delete(user_id)
 
 
 

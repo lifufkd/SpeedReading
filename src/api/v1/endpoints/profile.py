@@ -32,7 +32,7 @@ async def update_my_profile(
         password_hash=get_password_hash(request.password) if request.password else None,
         **request.model_dump()
     )
-    user = await profile_service.users_service.update_user(user_id=current_user.user_id, data=data)
+    user = await profile_service.users_service.update(user_id=current_user.user_id, data=data)
     user = await dto_to_schema(
         user,
         UserSchema
@@ -46,7 +46,7 @@ async def delete_my_profile(
         current_user: GetUsersDTO = Depends(validate_token),
         profile_service: ProfileService = Depends(get_profile_service)
 ):
-    await profile_service.users_service.delete_user(current_user.user_id)
+    await profile_service.users_service.delete(current_user.user_id)
 
 
 

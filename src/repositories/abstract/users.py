@@ -19,13 +19,13 @@ class UserAbstract(ABC):
         pass
 
     @abstractmethod
-    async def add_user(self, data: CreateUsersDTO) -> Users:
+    async def add(self, data: CreateUsersDTO) -> Users:
         pass
 
     @abstractmethod
-    async def update_user(self, user_id: int, data: UpdateUsersDTO) -> Users | None:
+    async def update(self, user_id: int, data: UpdateUsersDTO) -> Users | None:
         pass
 
     @abstractmethod
-    async def delete_user(self, user_id: int) -> bool | None:
+    async def delete(self, user_id: int) -> bool | None:
         pass

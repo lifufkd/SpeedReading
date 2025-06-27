@@ -34,7 +34,7 @@ class UserRepository(UserAbstract):
         user = result.scalar_one_or_none()
         return user
 
-    async def add_user(self, data: CreateUsersDTO) -> Users:
+    async def add(self, data: CreateUsersDTO) -> Users:
         new_user = Users(
             **data.model_dump(exclude_none=True)
         )
@@ -44,7 +44,7 @@ class UserRepository(UserAbstract):
 
         return new_user
 
-    async def update_user(self, user_id: int, data: UpdateUsersDTO) -> Users | None:
+    async def update(self, user_id: int, data: UpdateUsersDTO) -> Users | None:
         user = await self.get_by_id(user_id)
         if not user:
             return None
@@ -57,7 +57,7 @@ class UserRepository(UserAbstract):
 
         return user
 
-    async def delete_user(self, user_id: int) -> bool | None:
+    async def delete(self, user_id: int) -> bool | None:
         user = await self.get_by_id(user_id)
         if not user:
             return None

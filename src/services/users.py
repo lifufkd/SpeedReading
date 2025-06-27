@@ -9,9 +9,9 @@ class UsersService:
     def __init__(self, uow: AbstractUoW):
         self.uow = uow
 
-    async def get_user_by_name(self, name: str) -> GetUsersDTO | None:
+    async def get_by_name(self, name: str) -> GetUsersDTO | None:
         async with self.uow as uow:
-            user = await uow.user_repository.get_by_name(name=name)
+            user = await uow.user_repository.get_by_name(name)
             if not user:
                 return None
 
@@ -21,9 +21,9 @@ class UsersService:
             )
             return user
 
-    async def update_user(self, user_id: int, data: UpdateUsersDTO) -> GetUsersDTO:
+    async def update(self, user_id: int, data: UpdateUsersDTO) -> GetUsersDTO:
         async with self.uow as uow:
-            user = await uow.user_repository.update_user(user_id=user_id, data=data)
+            user = await uow.user_repository.update(user_id, data)
             if not user:
                 raise UserNotFound()
 
@@ -33,8 +33,8 @@ class UsersService:
             )
             return user
 
-    async def delete_user(self, user_id: int) -> None:
+    async def delete(self, user_id: int) -> None:
         async with self.uow as uow:
-            user = await uow.user_repository.delete_user(user_id=user_id)
+            user = await uow.user_repository.delete(user_id)
             if not user:
                 raise UserNotFound()

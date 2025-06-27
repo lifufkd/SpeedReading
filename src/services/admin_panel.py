@@ -23,11 +23,11 @@ class AdminPanelService:
 
     async def create_user(self, user_name: str, data: CreateUsersDTO) -> GetUsersDTO:
         async with self.uow as uow:
-            user = await self.users_service.get_user_by_name(name=user_name)
+            user = await self.users_service.get_by_name(name=user_name)
             if user:
                 raise UserAlreadyExists()
 
-            new_user = await uow.user_repository.add_user(data)
+            new_user = await uow.user_repository.add(data)
             new_user = await sqlalchemy_to_pydantic(
                 new_user,
                 GetUsersDTO

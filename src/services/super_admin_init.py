@@ -11,11 +11,11 @@ class SuperAdminInitService:
 
     async def create_super_admin(self, user_name: str, data: CreateUsersDTO) -> GetUsersDTO | None:
         async with self.uow as uow:
-            user = await self.users_service.get_user_by_name(name=user_name)
+            user = await self.users_service.get_by_name(name=user_name)
             if user:
                 return None
 
-            super_admin = await uow.user_repository.add_user(data)
+            super_admin = await uow.user_repository.add(data)
             super_admin = await sqlalchemy_to_pydantic(
                 super_admin,
                 GetUsersDTO
