@@ -14,8 +14,16 @@ class UserNotFound(AppException):
 
 
 class UserAlreadyExists(AppException):
-    def __init__(self):
-        super().__init__(detail="User already existed", status_code=409)
+    def __init__(self, user_id: int | None = None, user_name: str | None = None):
+        if user_id and user_name:
+            msg = f"User with id({user_id}) and username({user_name}) already exists.)"
+        elif user_id:
+            msg = f"User with id({user_id}) already exists."
+        elif user_name:
+            msg = f"User with username({user_name}) already exists."
+        else:
+            msg = "User already existed"
+        super().__init__(detail=msg, status_code=409)
 
 
 class UserIsNotAdmin(AppException):
