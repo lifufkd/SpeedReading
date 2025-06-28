@@ -12,3 +12,14 @@ class ExerciseTypes(Enum):
     EFFECTIVE = "effective"
     BLOCKS = "blocks"
     TABLES = "tables"
+
+
+class LoggerLevels(Enum):
+    TRACE = "TRACE"
+    DEBUG = "DEBUG"
+    INFO = "INFO"
+    SUCCESS = "SUCCESS"
+    WARNING = "WARNING"
+    ERROR = "ERROR"
+    CRITICAL = "CRITICAL"
+

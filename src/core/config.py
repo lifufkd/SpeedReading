@@ -1,6 +1,8 @@
 from pydantic_settings import BaseSettings
 from pydantic import ConfigDict
 
+from src.schemas.enums import LoggerLevels
+
 
 class DBSettings(BaseSettings):
     DB_USER: str = "postgres"
@@ -80,9 +82,18 @@ class CORSSettings(BaseSettings):
     CORS_ALLOWED_ORIGINS: list[str] = []
 
 
+class LoggerSettings(BaseSettings):
+    LOG_LEVEL: LoggerLevels = LoggerLevels.INFO
+    LOG_FILE_PATH: str = "app_data/logs/app.log"
+    LOG_ROTATION: str = "10 MB"
+    LOG_RETENTION: str = "7 days"
+    LOG_COMPRESSION: str = "gz"
+
+
 db_settings = DBSettings()
 generic_settings = GenericSettings()
 jwt_settings = JWTSettings()
 redis_settings = RedisSettings()
 cors_settings = CORSSettings()
+logger_settings = LoggerSettings()
 
