@@ -8,12 +8,15 @@ from src.database.init_db import create_tables
 from src.api.v1.router import api_v1_router
 from src.core.bootstrap import create_super_admin
 from src.core.exceptions import AppException
-from src.core.exceptions_handler import jwt_exception_handler, app_exception_handler
+from src.core.exceptions_handler import jwt_exception_handler, app_exception_handler, internal_server_error_handler
 from src.core.config import cors_settings
+from src.core.middleware import LoggingMiddleware
+from src.core.logger import setup_logger
 
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
+    setup_logger()
     await create_tables()
     await create_super_admin()
     yield
@@ -28,11 +31,13 @@ app.add_middleware(
     allow_methods=cors_settings.CORS_ALLOW_METHODS,
     allow_headers=cors_settings.CORS_ALLOW_HEADERS,
 )
+app.add_middleware(LoggingMiddleware)
 
 app.include_router(api_v1_router, prefix="/api/v1")
 
 app.add_exception_handler(AuthJWTException, jwt_exception_handler)
 app.add_exception_handler(AppException, app_exception_handler)
+app.add_exception_handler(Exception, internal_server_error_handler)
 
 
 if __name__ == "__main__":
