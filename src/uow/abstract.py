@@ -16,5 +16,9 @@ class AbstractUoW(ABC):
         pass
 
     @abstractmethod
+    async def flush(self):
+        pass
+
+    @abstractmethod
     async def rollback(self):
         pass

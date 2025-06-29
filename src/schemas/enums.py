@@ -6,6 +6,18 @@ class UsersRoles(Enum):
     USER = "user"
 
 
+class TaskTypes(Enum):
+    EXERCISE = "exercise"
+    LESSON = "lesson"
+    COURSE = "course"
+
+
+class ExerciseCompleteStatus(Enum):
+    NOT_STARTED = "not_started"
+    IN_PROGRESS = "in_progress"
+    COMPLETED = "completed"
+
+
 class ExerciseTypes(Enum):
     SCHULTE = "schulte"
     DARKENED = "darkened"

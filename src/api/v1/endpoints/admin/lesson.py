@@ -26,7 +26,7 @@ router = APIRouter(
 )
 
 
-@router.get("/", status_code=status.HTTP_200_OK, response_model=list[LessonsNestedSchema])
+@router.get("", status_code=status.HTTP_200_OK, response_model=list[LessonsNestedSchema])
 async def get_lessons(
         lesson_service: LessonService = Depends(get_lesson_service)
 ):
@@ -40,7 +40,7 @@ async def get_lessons(
     return lessons
 
 
-@router.post("/", status_code=status.HTTP_201_CREATED, response_model=LessonsSchema)
+@router.post("", status_code=status.HTTP_201_CREATED, response_model=LessonsSchema)
 async def create_lesson(
         request: CreateLessonsSchema = Body(),
         lesson_service: LessonService = Depends(get_lesson_service)

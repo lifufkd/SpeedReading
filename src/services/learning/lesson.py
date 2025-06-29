@@ -85,6 +85,8 @@ class LessonService:
             existed_courses_ids = [course.course_id for course in lesson.courses]
 
             courses = await uow.course_repository.get_by_ids(data.add_courses_ids + data.delete_courses_ids)
+            if not courses:
+                raise CoursesNotFound(data.add_courses_ids + data.delete_courses_ids)
             founded_courses_ids = {course.course_id for course in courses}
             missing_courses_ids = list(set(data.add_courses_ids + data.delete_courses_ids) - founded_courses_ids)
             if missing_courses_ids:

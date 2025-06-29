@@ -1,9 +1,11 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.orm import selectinload
 
 from src.models.users import Users
 from src.repositories.abstract.users import UserAbstract
 from src.dto.users import UpdateUsersDTO, CreateUsersDTO
+from src.schemas.enums import UsersRoles
 
 
 class UserRepository(UserAbstract):
@@ -11,7 +13,19 @@ class UserRepository(UserAbstract):
         self._session = session
 
     async def get_all(self) -> list[Users]:
-        query = select(Users)
+        query = (
+            select(Users)
+        )
+        result = await self._session.execute(query)
+
+        return list(result.scalars().all())
+
+    async def get_all_students(self) -> list[Users]:
+        query = (
+            select(Users)
+            .where(Users.role == UsersRoles.USER)
+            .options(selectinload(Users.tasks))
+        )
         result = await self._session.execute(query)
 
         return list(result.scalars().all())
@@ -28,6 +42,7 @@ class UserRepository(UserAbstract):
     async def get_by_id(self, user_id: int) -> Users:
         query = (
             select(Users)
+            .options(selectinload(Users.tasks))
             .where(Users.user_id == user_id)
         )
         result = await self._session.execute(query)

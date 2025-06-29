@@ -26,7 +26,7 @@ router = APIRouter(
 )
 
 
-@router.get("/", status_code=status.HTTP_200_OK, response_model=list[CoursesNestedSchema])
+@router.get("", status_code=status.HTTP_200_OK, response_model=list[CoursesNestedSchema])
 async def get_courses(
         course_service: CourseService = Depends(get_course_service)
 ):
@@ -40,7 +40,7 @@ async def get_courses(
     return courses
 
 
-@router.post("/", status_code=status.HTTP_201_CREATED, response_model=CoursesSchema)
+@router.post("", status_code=status.HTTP_201_CREATED, response_model=CoursesSchema)
 async def create_course(
         request: CreateCoursesSchema = Body(),
         course_service: CourseService = Depends(get_course_service)
