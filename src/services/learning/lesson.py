@@ -13,6 +13,7 @@ from src.dto.lessons import (
     CreateLessonsDTO
 )
 from src.validators.common import is_number_in_list, is_number_not_in_list
+from src.services.utils.validate_all_ids_found import validate_all_ids_found
 
 
 class LessonService:
@@ -50,12 +51,12 @@ class LessonService:
             existed_exercises_ids = [exercise.exercise_id for exercise in lesson.exercises]
 
             exercises = await uow.exercise_repository.get_by_ids(data.add_exercises_ids + data.delete_exercises_ids)
-            if not exercises:
-                raise ExerciseNotFound(data.add_exercises_ids + data.delete_exercises_ids)
-            founded_exercises_ids = {exercise.exercise_id for exercise in exercises}
-            missing_exercises_ids = list(set(data.add_exercises_ids + data.delete_exercises_ids) - founded_exercises_ids)
-            if missing_exercises_ids:
-                raise ExerciseNotFound(missing_exercises_ids)
+            validate_all_ids_found(
+                input_ids=data.add_exercises_ids + data.delete_exercises_ids,
+                founded_objects=exercises,
+                id_getter_function=lambda exercise: exercise.exercise_id,
+                exception_builder=ExerciseNotFound
+            )
 
             data.add_exercises_ids = list(
                 filter(partial(is_number_not_in_list, list_=existed_exercises_ids), data.add_exercises_ids))
@@ -85,12 +86,12 @@ class LessonService:
             existed_courses_ids = [course.course_id for course in lesson.courses]
 
             courses = await uow.course_repository.get_by_ids(data.add_courses_ids + data.delete_courses_ids)
-            if not courses:
-                raise CoursesNotFound(data.add_courses_ids + data.delete_courses_ids)
-            founded_courses_ids = {course.course_id for course in courses}
-            missing_courses_ids = list(set(data.add_courses_ids + data.delete_courses_ids) - founded_courses_ids)
-            if missing_courses_ids:
-                raise CoursesNotFound(missing_courses_ids)
+            validate_all_ids_found(
+                input_ids=data.add_courses_ids + data.delete_courses_ids,
+                founded_objects=courses,
+                id_getter_function=lambda course: course.course_id,
+                exception_builder=CoursesNotFound
+            )
 
             data.add_courses_ids = list(
                 filter(partial(is_number_not_in_list, list_=existed_courses_ids), data.add_courses_ids))
