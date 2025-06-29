@@ -1,6 +1,6 @@
 from sqlalchemy import BigInteger
 from sqlalchemy import Enum as SAEnum
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.database.base_mixins import TimestampMixin
 from src.database.base import OrmBase
@@ -16,6 +16,11 @@ class Users(OrmBase, TimestampMixin):
     role: Mapped[UsersRoles] = mapped_column(
         SAEnum(UsersRoles, name="users_role_enum", create_constraint=True),
         nullable=False
+    )
+
+    tasks: Mapped[list["UsersTasks"]] = relationship(
+        back_populates="user",
+        cascade='all, delete-orphan'
     )
 
     def __repr__(self):

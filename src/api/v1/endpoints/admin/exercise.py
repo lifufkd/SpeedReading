@@ -27,7 +27,7 @@ router = APIRouter(
 )
 
 
-@router.get("/", status_code=status.HTTP_200_OK, response_model=list[ExerciseNestedSchema])
+@router.get("", status_code=status.HTTP_200_OK, response_model=list[ExerciseNestedSchema])
 async def get_exercises(
         exercise_service: ExerciseService = Depends(get_exercise_service)
 ):
@@ -41,7 +41,7 @@ async def get_exercises(
     return exercises
 
 
-@router.post("/", status_code=status.HTTP_201_CREATED, response_model=ExerciseSchema)
+@router.post("", status_code=status.HTTP_201_CREATED, response_model=ExerciseSchema)
 async def create_exercise(
         request: CreateExerciseSchema = Body(),
         exercise_service: ExerciseService = Depends(get_exercise_service)

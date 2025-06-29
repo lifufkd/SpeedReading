@@ -31,6 +31,11 @@ class UserIsNotAdmin(AppException):
         super().__init__(detail="Operation not allowed", status_code=403)
 
 
+class UserIsNotStudent(AppException):
+    def __init__(self):
+        super().__init__(detail="Operation not allowed, user is not a student", status_code=403)
+
+
 class UserIdIsSame(AppException):
     def __init__(self):
         super().__init__(detail="Your id and requested are same, operation not allowed", status_code=422)
@@ -65,4 +70,13 @@ class CoursesNotFound(AppException):
             msg = f"Courses with ids:({','.join(map(str, courses_ids))}) not found"
         else:
             msg = "Course not found"
+        super().__init__(detail=msg, status_code=404)
+
+
+class AssignedTasksNotFound(AppException):
+    def __init__(self, assigned_ids: list[int] | None = None):
+        if assigned_ids:
+            msg = f"Assigned with ids:({','.join(map(str, assigned_ids))}) not found"
+        else:
+            msg = "Assigned not found"
         super().__init__(detail=msg, status_code=404)

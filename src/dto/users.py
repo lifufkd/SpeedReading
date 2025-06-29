@@ -15,6 +15,10 @@ class GetUsersDTO(BaseModel):
     updated_at: datetime
 
 
+class GetNestedUsersDTO(GetUsersDTO):
+    tasks: list["AssignmentDTO"]
+
+
 class UpdateUsersDTO(BaseModel):
     login: Optional[str] = None
     password_hash: Optional[str] = None

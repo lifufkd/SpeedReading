@@ -15,6 +15,10 @@ class UserSchemaBase(BaseModel):
     updated_at: datetime
 
 
+class UserNestedSchema(UserSchemaBase):
+    tasks: list["AssignmentSchema"]
+
+
 class PasswordValidatorBase(BaseModel):
     @field_validator("password", check_fields=False)
     @classmethod
