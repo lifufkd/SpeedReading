@@ -10,6 +10,7 @@ from src.dto.assignment import (
 from src.schemas.enums import TaskTypes
 from src.models.users_tasks import UsersTasks
 from src.validators.users import validate_user_is_student
+from src.services.utils.validate_all_ids_found import validate_all_ids_found
 
 
 class AssignmentService:
@@ -34,13 +35,12 @@ class AssignmentService:
             await validate_user_is_student(user)
 
             exercises = await uow.exercise_repository.get_by_ids(data.add_exercises_ids + data.delete_exercises_ids)
-            if not exercises:
-                raise ExerciseNotFound(data.add_exercises_ids + data.delete_exercises_ids)
-            founded_exercises_ids = {exercise.exercise_id for exercise in exercises}
-            missing_exercises_ids = list(
-                set(data.add_exercises_ids + data.delete_exercises_ids) - founded_exercises_ids)
-            if missing_exercises_ids:
-                raise ExerciseNotFound(missing_exercises_ids)
+            validate_all_ids_found(
+                input_ids=data.add_exercises_ids + data.delete_exercises_ids,
+                founded_objects=exercises,
+                id_getter_function=lambda exercise: exercise.exercise_id,
+                exception_builder=ExerciseNotFound
+            )
 
             assigned_tasks = await uow.assignment_repository.get_by_task_type(user_id, TaskTypes.EXERCISE)
             if not assigned_tasks:
@@ -78,12 +78,12 @@ class AssignmentService:
             await validate_user_is_student(user)
 
             lessons = await uow.lesson_repository.get_by_ids(data.add_lessons_ids + data.delete_lessons_ids)
-            if not lessons:
-                raise LessonsNotFound(data.add_lessons_ids + data.delete_lessons_ids)
-            founded_lessons_ids = {lesson.lesson_id for lesson in lessons}
-            missing_lessons_ids = list(set(data.add_lessons_ids + data.delete_lessons_ids) - founded_lessons_ids)
-            if missing_lessons_ids:
-                raise LessonsNotFound(missing_lessons_ids)
+            validate_all_ids_found(
+                input_ids=data.add_lessons_ids + data.delete_lessons_ids,
+                founded_objects=lessons,
+                id_getter_function=lambda lesson: lesson.lesson_id,
+                exception_builder=LessonsNotFound
+            )
 
             assigned_tasks = await uow.assignment_repository.get_by_task_type(user_id, TaskTypes.LESSON)
             if not assigned_tasks:
@@ -121,12 +121,12 @@ class AssignmentService:
             await validate_user_is_student(user)
 
             courses = await uow.course_repository.get_by_ids(data.add_courses_ids + data.delete_courses_ids)
-            if not courses:
-                raise CoursesNotFound(data.add_courses_ids + data.delete_courses_ids)
-            founded_courses_ids = {course.course_id for course in courses}
-            missing_courses_ids = list(set(data.add_courses_ids + data.delete_courses_ids) - founded_courses_ids)
-            if missing_courses_ids:
-                raise CoursesNotFound(missing_courses_ids)
+            validate_all_ids_found(
+                input_ids=data.add_courses_ids + data.delete_courses_ids,
+                founded_objects=courses,
+                id_getter_function=lambda course: course.course_id,
+                exception_builder=CoursesNotFound
+            )
 
             assigned_tasks = await uow.assignment_repository.get_by_task_type(user_id, TaskTypes.COURSE)
             if not assigned_tasks:
