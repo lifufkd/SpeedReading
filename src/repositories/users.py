@@ -25,6 +25,7 @@ class UserRepository(UserAbstract):
             select(Users)
             .where(Users.role == UsersRoles.USER)
             .options(selectinload(Users.tasks))
+            .options(selectinload(Users.progress))
         )
         result = await self._session.execute(query)
 
@@ -43,6 +44,7 @@ class UserRepository(UserAbstract):
         query = (
             select(Users)
             .options(selectinload(Users.tasks))
+            .options(selectinload(Users.progress))
             .where(Users.user_id == user_id)
         )
         result = await self._session.execute(query)

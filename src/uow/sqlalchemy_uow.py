@@ -1,6 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.repositories.assignment import AssignmentRepository
+from src.repositories.users_progress import UsersProgressRepository
+from src.repositories.users_tasks import UsersTasksRepository
 from src.repositories.courses import CourseRepository
 from src.uow.abstract import AbstractUoW
 from src.repositories.users import UserRepository
@@ -15,7 +16,8 @@ class SQLAlchemyUoW(AbstractUoW):
         self.exercise_repository = ExerciseRepository(session)
         self.lesson_repository = LessonRepository(session)
         self.course_repository = CourseRepository(session)
-        self.assignment_repository = AssignmentRepository(session)
+        self.users_tasks_repository = UsersTasksRepository(session)
+        self.users_progress_repository = UsersProgressRepository(session)
 
     async def __aenter__(self):
         return self

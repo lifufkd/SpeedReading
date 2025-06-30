@@ -1,7 +1,7 @@
 from src.uow.abstract import AbstractUoW
 from src.core.exceptions import ExerciseNotFound, UserNotFound, LessonsNotFound, CoursesNotFound
 from src.core.orm_to_dto import many_sqlalchemy_to_pydantic, sqlalchemy_to_pydantic
-from src.dto.users import GetNestedUsersDTO
+from src.dto.users import GetUserNestedTasksDTO, GetUserNestedProgressDTO, GetUserNestedDTO
 from src.dto.assignment import (
     UpdateAssignedExercisesDTO,
     UpdateAssignedLessonsDTO,
@@ -9,6 +9,7 @@ from src.dto.assignment import (
 )
 from src.schemas.enums import TaskTypes
 from src.models.users_tasks import UsersTasks
+from src.models.m2m import UsersProgress
 from src.validators.users import validate_user_is_student
 from src.services.utils.validate_all_ids_found import validate_all_ids_found
 
@@ -17,17 +18,17 @@ class AssignmentService:
     def __init__(self, uow: AbstractUoW):
         self.uow = uow
 
-    async def get_all_students(self) -> list[GetNestedUsersDTO]:
+    async def get_all_students(self) -> list[GetUserNestedDTO]:
         async with self.uow as uow:
             users = await uow.user_repository.get_all_students()
             users = await many_sqlalchemy_to_pydantic(
                 users,
-                GetNestedUsersDTO
+                GetUserNestedDTO
             )
 
             return users
 
-    async def update_exercise(self, user_id: int, data: UpdateAssignedExercisesDTO) -> GetNestedUsersDTO:
+    async def update_exercise(self, user_id: int, data: UpdateAssignedExercisesDTO) -> GetUserNestedTasksDTO:
         async with self.uow as uow:
             user = await uow.user_repository.get_by_id(user_id)
             if not user:
@@ -42,7 +43,7 @@ class AssignmentService:
                 exception_builder=ExerciseNotFound
             )
 
-            assigned_tasks = await uow.assignment_repository.get_by_task_type(user_id, TaskTypes.EXERCISE)
+            assigned_tasks = await uow.users_tasks_repository.get_by_task_type(user_id, TaskTypes.EXERCISE)
             if not assigned_tasks:
                 assigned_exercises = []
             else:
@@ -65,12 +66,12 @@ class AssignmentService:
 
             user = await sqlalchemy_to_pydantic(
                 user,
-                GetNestedUsersDTO
+                GetUserNestedTasksDTO
             )
 
             return user
 
-    async def update_lessons(self, user_id: int, data: UpdateAssignedLessonsDTO) -> GetNestedUsersDTO:
+    async def update_lessons(self, user_id: int, data: UpdateAssignedLessonsDTO) -> GetUserNestedTasksDTO:
         async with self.uow as uow:
             user = await uow.user_repository.get_by_id(user_id)
             if not user:
@@ -85,7 +86,7 @@ class AssignmentService:
                 exception_builder=LessonsNotFound
             )
 
-            assigned_tasks = await uow.assignment_repository.get_by_task_type(user_id, TaskTypes.LESSON)
+            assigned_tasks = await uow.users_tasks_repository.get_by_task_type(user_id, TaskTypes.LESSON)
             if not assigned_tasks:
                 assigned_lessons = []
             else:
@@ -108,12 +109,12 @@ class AssignmentService:
 
             user = await sqlalchemy_to_pydantic(
                 user,
-                GetNestedUsersDTO
+                GetUserNestedTasksDTO
             )
 
             return user
 
-    async def update_courses(self, user_id: int, data: UpdateAssignedCoursesDTO) -> GetNestedUsersDTO:
+    async def update_courses(self, user_id: int, data: UpdateAssignedCoursesDTO) -> GetUserNestedTasksDTO:
         async with self.uow as uow:
             user = await uow.user_repository.get_by_id(user_id)
             if not user:
@@ -128,7 +129,7 @@ class AssignmentService:
                 exception_builder=CoursesNotFound
             )
 
-            assigned_tasks = await uow.assignment_repository.get_by_task_type(user_id, TaskTypes.COURSE)
+            assigned_tasks = await uow.users_tasks_repository.get_by_task_type(user_id, TaskTypes.COURSE)
             if not assigned_tasks:
                 assigned_courses = []
             else:
@@ -151,7 +152,59 @@ class AssignmentService:
 
             user = await sqlalchemy_to_pydantic(
                 user,
-                GetNestedUsersDTO
+                GetUserNestedTasksDTO
+            )
+
+            return user
+
+    async def update_progress(self, user_id: int) -> GetUserNestedProgressDTO:
+        async with self.uow as uow:
+            user = await uow.user_repository.get_by_id(user_id)
+            if not user:
+                raise UserNotFound()
+            await validate_user_is_student(user)
+
+            user_tasks = user.tasks
+            user_progress = user.progress
+            user_tasks_exercises_ids = set()
+            user_progress_exercises_ids = [progress.exercise_id for progress in user_progress]
+
+            for task in user_tasks:
+                match task.task_type:
+                    case TaskTypes.EXERCISE:
+                        user_tasks_exercises_ids.add(task.task_id)
+                    case TaskTypes.LESSON:
+                        lesson = await uow.lesson_repository.get_by_id(task.task_id)
+                        if not lesson:
+                            continue
+
+                        user_tasks_exercises_ids.update([exercise.exercise_id for exercise in lesson.exercises])
+                    case TaskTypes.COURSE:
+                        course = await uow.course_repository.get_by_id(task.task_id)
+                        if not course:
+                            continue
+
+                        for lesson in course.lessons:
+                            user_tasks_exercises_ids.update([exercise.exercise_id for exercise in lesson.exercises])
+                        for exercise in course.exercises:
+                            user_tasks_exercises_ids.add(exercise.exercise_id)
+
+            for task_exercise_id in user_tasks_exercises_ids:
+                if task_exercise_id in user_progress_exercises_ids:
+                    continue
+                print(task_exercise_id)
+
+                user_progress = UsersProgress(
+                    user_id=user_id,
+                    exercise_id=task_exercise_id
+                )
+                user.progress.append(user_progress)
+
+            await uow.flush()
+
+            user = await sqlalchemy_to_pydantic(
+                user,
+                GetUserNestedProgressDTO
             )
 
             return user

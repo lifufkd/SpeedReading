@@ -2,11 +2,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
 from src.models.users_tasks import UsersTasks
-from src.repositories.abstract.assignment import AssignmentAbstract
+from src.repositories.abstract.users_tasks import UsersTasksAbstract
 from src.schemas.enums import TaskTypes
 
 
-class AssignmentRepository(AssignmentAbstract):
+class UsersTasksRepository(UsersTasksAbstract):
     def __init__(self, session: AsyncSession):
         self._session = session
 

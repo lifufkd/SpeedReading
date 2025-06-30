@@ -15,8 +15,16 @@ class GetUsersDTO(BaseModel):
     updated_at: datetime
 
 
-class GetNestedUsersDTO(GetUsersDTO):
-    tasks: list["AssignmentDTO"]
+class GetUserNestedTasksDTO(GetUsersDTO):
+    tasks: list["UsersTasksDTO"]
+
+
+class GetUserNestedProgressDTO(GetUsersDTO):
+    progress: list["UsersProgressDTO"]
+
+
+class GetUserNestedDTO(GetUserNestedTasksDTO, GetUserNestedProgressDTO):
+    pass
 
 
 class UpdateUsersDTO(BaseModel):

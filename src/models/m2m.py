@@ -1,6 +1,6 @@
 from sqlalchemy import BigInteger, ForeignKey
 from sqlalchemy import Enum as SAEnum
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.database.base_mixins import TimestampMixin
 from src.database.base import OrmBase
@@ -49,8 +49,8 @@ class LessonsCourses(OrmBase, TimestampMixin):
     )
 
 
-class UsersExercisesStatus(OrmBase, TimestampMixin):
-    __tablename__ = 'users_exercises_status'
+class UsersProgress(OrmBase, TimestampMixin):
+    __tablename__ = 'users_progress'
     user_id: Mapped[int] = mapped_column(
         BigInteger,
         ForeignKey("users.user_id", ondelete="CASCADE"),
@@ -62,7 +62,9 @@ class UsersExercisesStatus(OrmBase, TimestampMixin):
         primary_key=True
     )
     status: Mapped[ExerciseCompleteStatus] = mapped_column(
-        SAEnum(ExerciseCompleteStatus, name="users_exercises_status_status_enum", create_constraint=True),
+        SAEnum(ExerciseCompleteStatus, name="users_progress_status_enum", create_constraint=True),
         nullable=False,
         default=ExerciseCompleteStatus.NOT_STARTED
     )
+
+    user: Mapped["Users"] = relationship(back_populates="progress")

@@ -11,7 +11,10 @@ from src.dto.assignment import (
     UpdateAssignedCoursesDTO
 )
 from src.core.dto_to_schema import many_dto_to_schema, dto_to_schema
-from src.schemas.users.base import (UserNestedSchema)
+from src.schemas.users.base import (
+    UserNestedTasksSchema,
+    UserNestedSchema
+)
 from src.schemas.learning.assignment import (
     UpdateAssignedExercisesSchema,
     UpdateAssignedLessonsSchema,
@@ -37,7 +40,7 @@ async def get_users(
     return users
 
 
-@router.patch("/exercises", response_model=UserNestedSchema, status_code=status.HTTP_200_OK)
+@router.patch("/exercises", response_model=UserNestedTasksSchema, status_code=status.HTTP_200_OK)
 async def update_assigned_exercises(
         user_id: int = Query(),
         request: UpdateAssignedExercisesSchema = Body(),
@@ -47,15 +50,16 @@ async def update_assigned_exercises(
         **request.model_dump(),
     )
     user = await assignment_service.update_exercise(user_id, data)
+    await assignment_service.update_progress(user_id=user_id)
     user = await dto_to_schema(
         user,
-        UserNestedSchema
+        UserNestedTasksSchema
     )
 
     return user
 
 
-@router.patch("/lessons", response_model=UserNestedSchema, status_code=status.HTTP_200_OK)
+@router.patch("/lessons", response_model=UserNestedTasksSchema, status_code=status.HTTP_200_OK)
 async def update_assigned_lessons(
         user_id: int = Query(),
         request: UpdateAssignedLessonsSchema = Body(),
@@ -65,15 +69,16 @@ async def update_assigned_lessons(
         **request.model_dump(),
     )
     user = await assignment_service.update_lessons(user_id, data)
+    await assignment_service.update_progress(user_id=user_id)
     user = await dto_to_schema(
         user,
-        UserNestedSchema
+        UserNestedTasksSchema
     )
 
     return user
 
 
-@router.patch("/courses", response_model=UserNestedSchema, status_code=status.HTTP_200_OK)
+@router.patch("/courses", response_model=UserNestedTasksSchema, status_code=status.HTTP_200_OK)
 async def update_assigned_courses(
         user_id: int = Query(),
         request: UpdateAssignedCoursesSchema = Body(),
@@ -83,9 +88,10 @@ async def update_assigned_courses(
         **request.model_dump(),
     )
     user = await assignment_service.update_courses(user_id, data)
+    await assignment_service.update_progress(user_id=user_id)
     user = await dto_to_schema(
         user,
-        UserNestedSchema
+        UserNestedTasksSchema
     )
 
     return user

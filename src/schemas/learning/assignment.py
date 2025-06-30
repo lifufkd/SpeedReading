@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from datetime import datetime
 
-from src.schemas.enums import TaskTypes
+from src.schemas.enums import TaskTypes, ExerciseCompleteStatus
 from src.schemas.learning.base import UniqueFieldValidator
 
 
@@ -10,6 +10,14 @@ class AssignmentSchema(BaseModel):
     user_id: int
     task_id: int
     task_type: TaskTypes
+    created_at: datetime
+    updated_at: datetime
+
+
+class UsersProgressSchema(BaseModel):
+    user_id: int
+    exercise_id: int
+    status: ExerciseCompleteStatus
     created_at: datetime
     updated_at: datetime
 
