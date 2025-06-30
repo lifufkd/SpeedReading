@@ -15,8 +15,16 @@ class UserSchemaBase(BaseModel):
     updated_at: datetime
 
 
-class UserNestedSchema(UserSchemaBase):
+class UserNestedTasksSchema(UserSchemaBase):
     tasks: list["AssignmentSchema"]
+
+
+class UserNestedProgressSchema(UserSchemaBase):
+    progress: list["UsersProgressSchema"]
+
+
+class UserNestedSchema(UserNestedTasksSchema, UserNestedProgressSchema):
+    pass
 
 
 class PasswordValidatorBase(BaseModel):

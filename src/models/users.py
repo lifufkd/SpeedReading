@@ -23,5 +23,10 @@ class Users(OrmBase, TimestampMixin):
         cascade='all, delete-orphan'
     )
 
+    progress: Mapped[list["UsersProgress"]] = relationship(
+        back_populates="user",
+        cascade='all, delete-orphan'
+    )
+
     def __repr__(self):
         return f"<User(id='{self.user_id}', login='{self.login}', password_hash='{self.password_hash}', role='{self.role}')>"

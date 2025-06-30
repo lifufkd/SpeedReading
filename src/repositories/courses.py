@@ -3,6 +3,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
 from src.models.course import Courses
+from src.models.lesson import Lessons
 from src.repositories.abstract.courses import CoursesAbstract
 from src.dto.courses import CreateCoursesDTO, UpdateCoursesDTO
 
@@ -24,8 +25,9 @@ class CourseRepository(CoursesAbstract):
     async def get_by_id(self, course_id: int) -> Courses:
         query = (
             select(Courses)
-            .options(selectinload(Courses.exercises))
-            .options(selectinload(Courses.lessons))
+            .options(selectinload(Courses.exercises))  # direct exercises
+            .options(selectinload(Courses.lessons))  # direct lessons
+            .options(selectinload(Courses.lessons).selectinload(Lessons.exercises))  # nested exercises
             .where(Courses.course_id == course_id)
         )
         result = await self._session.execute(query)
