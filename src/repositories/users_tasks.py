@@ -1,14 +1,25 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, delete
 
 from src.models.users_tasks import UsersTasks
 from src.repositories.abstract.users_tasks import UsersTasksAbstract
 from src.schemas.enums import TaskTypes
+from src.dto.assignment import FilterUsersTasksDTO
 
 
 class UsersTasksRepository(UsersTasksAbstract):
     def __init__(self, session: AsyncSession):
         self._session = session
+
+    async def get_by_filter(self, data: FilterUsersTasksDTO) -> list[UsersTasks]:
+        query = (
+            select(UsersTasks)
+            .filter_by(
+                **data.model_dump(exclude_none=True)
+            )
+        )
+        result = await self._session.execute(query)
+        return list(result.scalars().all())
 
     async def get_by_task_type(self, user_id: int, task_type: TaskTypes) -> list[UsersTasks]:
         query = (
@@ -19,3 +30,9 @@ class UsersTasksRepository(UsersTasksAbstract):
         result = await self._session.execute(query)
 
         return list(result.scalars().all())
+
+    async def delete(self, data: FilterUsersTasksDTO) -> None:
+        user_tasks = await self.get_by_filter(data)
+
+        for user_task in user_tasks:
+            await self._session.delete(user_task)

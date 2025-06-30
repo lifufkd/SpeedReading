@@ -4,6 +4,7 @@ from src.uow.abstract import AbstractUoW
 from src.core.exceptions import LessonsNotFound, ExerciseNotFound, CoursesNotFound
 from src.core.orm_to_dto import many_sqlalchemy_to_pydantic
 from src.core.orm_to_dto import sqlalchemy_to_pydantic
+from src.dto.assignment import FilterUsersTasksDTO
 from src.dto.lessons import (
     GetLessonsDTO,
     GetNestedLessonsDTO,
@@ -12,6 +13,7 @@ from src.dto.lessons import (
     UpdateLessonsDTO,
     CreateLessonsDTO
 )
+from src.schemas.enums import TaskTypes
 from src.validators.common import is_number_in_list, is_number_not_in_list
 from src.services.utils.validate_all_ids_found import validate_all_ids_found
 
@@ -140,3 +142,9 @@ class LessonService:
             lesson = await uow.lesson_repository.delete(lesson_id)
             if not lesson:
                 raise LessonsNotFound()
+
+            data = FilterUsersTasksDTO(
+                task_id=lesson_id,
+                task_type=TaskTypes.LESSON
+            )
+            await uow.users_tasks_repository.delete(data)

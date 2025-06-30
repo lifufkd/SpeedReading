@@ -3,8 +3,9 @@ from fastapi import APIRouter, status, Depends, Body, Path
 import src.schemas.learning # noqa
 import src.dto # noqa
 from src.services.learning.exercise import ExerciseService
+from src.services.learning.assignment import AssignmentService
 from src.dependencies.security import validate_token, validate_admin
-from src.dependencies.services import get_exercise_service
+from src.dependencies.services import get_exercise_service, get_assignment_service
 from src.dto.exercises import (
     CreateExerciseDTO,
     UpdateExerciseDTO,
@@ -88,12 +89,14 @@ async def delete_exercise(
 async def update_exercise_to_lessons(
         exercise_id: int = Path(),
         request: UpdateExerciseLessonsSchema = Body(),
-        exercise_service: ExerciseService = Depends(get_exercise_service)
+        exercise_service: ExerciseService = Depends(get_exercise_service),
+        assignment_service: AssignmentService = Depends(get_assignment_service)
 ):
     data = UpdateExerciseLessonsDTO(
         **request.model_dump()
     )
     exercise = await exercise_service.update_lessons(exercise_id, data)
+    await assignment_service.update_progress()
     exercise = await dto_to_schema(
         exercise,
         ExerciseNestedSchema
@@ -106,12 +109,14 @@ async def update_exercise_to_lessons(
 async def update_exercise_to_courses(
         exercise_id: int = Path(),
         request: UpdateExerciseCoursesSchema = Body(),
-        exercise_service: ExerciseService = Depends(get_exercise_service)
+        exercise_service: ExerciseService = Depends(get_exercise_service),
+        assignment_service: AssignmentService = Depends(get_assignment_service)
 ):
     data = UpdateExerciseCoursesDTO(
         **request.model_dump()
     )
     exercise = await exercise_service.update_courses(exercise_id, data)
+    await assignment_service.update_progress()
     exercise = await dto_to_schema(
         exercise,
         ExerciseNestedSchema

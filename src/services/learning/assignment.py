@@ -10,6 +10,7 @@ from src.dto.assignment import (
 from src.schemas.enums import TaskTypes
 from src.models.users_tasks import UsersTasks
 from src.models.m2m import UsersProgress
+from src.models.users import Users
 from src.validators.users import validate_user_is_student
 from src.services.utils.validate_all_ids_found import validate_all_ids_found
 
@@ -157,54 +158,68 @@ class AssignmentService:
 
             return user
 
-    async def update_progress(self, user_id: int) -> GetUserNestedProgressDTO:
+    async def _update_students_progress(self, user: Users, uow) -> GetUserNestedProgressDTO:
+        user_tasks = user.tasks
+        user_progress = user.progress
+        user_tasks_exercises_ids = set()
+        user_progress_exercises_ids = [progress.exercise_id for progress in user_progress]
+
+        for task in user_tasks:
+            match task.task_type:
+                case TaskTypes.EXERCISE:
+                    user_tasks_exercises_ids.add(task.task_id)
+                case TaskTypes.LESSON:
+                    lesson = await uow.lesson_repository.get_by_id(task.task_id)
+                    if not lesson:
+                        continue
+
+                    user_tasks_exercises_ids.update([exercise.exercise_id for exercise in lesson.exercises])
+                case TaskTypes.COURSE:
+                    course = await uow.course_repository.get_by_id(task.task_id)
+                    if not course:
+                        continue
+
+                    for lesson in course.lessons:
+                        user_tasks_exercises_ids.update([exercise.exercise_id for exercise in lesson.exercises])
+                    for exercise in course.exercises:
+                        user_tasks_exercises_ids.add(exercise.exercise_id)
+
+        for task_exercise_id in user_tasks_exercises_ids:
+            if task_exercise_id in user_progress_exercises_ids:
+                continue
+
+            user_progress = UsersProgress(
+                user_id=user.user_id,
+                exercise_id=task_exercise_id
+            )
+            user.progress.append(user_progress)
+
+        await uow.flush()
+
+        user = await sqlalchemy_to_pydantic(
+            user,
+            GetUserNestedProgressDTO
+        )
+
+        return user
+
+    async def update_progress_by_user_id(self, user_id: int) -> GetUserNestedProgressDTO:
         async with self.uow as uow:
             user = await uow.user_repository.get_by_id(user_id)
             if not user:
                 raise UserNotFound()
             await validate_user_is_student(user)
 
-            user_tasks = user.tasks
-            user_progress = user.progress
-            user_tasks_exercises_ids = set()
-            user_progress_exercises_ids = [progress.exercise_id for progress in user_progress]
-
-            for task in user_tasks:
-                match task.task_type:
-                    case TaskTypes.EXERCISE:
-                        user_tasks_exercises_ids.add(task.task_id)
-                    case TaskTypes.LESSON:
-                        lesson = await uow.lesson_repository.get_by_id(task.task_id)
-                        if not lesson:
-                            continue
-
-                        user_tasks_exercises_ids.update([exercise.exercise_id for exercise in lesson.exercises])
-                    case TaskTypes.COURSE:
-                        course = await uow.course_repository.get_by_id(task.task_id)
-                        if not course:
-                            continue
-
-                        for lesson in course.lessons:
-                            user_tasks_exercises_ids.update([exercise.exercise_id for exercise in lesson.exercises])
-                        for exercise in course.exercises:
-                            user_tasks_exercises_ids.add(exercise.exercise_id)
-
-            for task_exercise_id in user_tasks_exercises_ids:
-                if task_exercise_id in user_progress_exercises_ids:
-                    continue
-                print(task_exercise_id)
-
-                user_progress = UsersProgress(
-                    user_id=user_id,
-                    exercise_id=task_exercise_id
-                )
-                user.progress.append(user_progress)
-
-            await uow.flush()
-
-            user = await sqlalchemy_to_pydantic(
-                user,
-                GetUserNestedProgressDTO
-            )
-
+            user = await self._update_students_progress(user, uow)
             return user
+
+    async def update_progress(self) -> list[GetUserNestedProgressDTO]:
+        async with self.uow as uow:
+            updated_users = []
+            users = await uow.user_repository.get_all_students()
+
+            for user in users:
+                _user = await self._update_students_progress(user, uow)
+                updated_users.append(_user)
+
+            return updated_users

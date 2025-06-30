@@ -50,7 +50,7 @@ async def update_assigned_exercises(
         **request.model_dump(),
     )
     user = await assignment_service.update_exercise(user_id, data)
-    await assignment_service.update_progress(user_id=user_id)
+    await assignment_service.update_progress_by_user_id(user_id=user_id)
     user = await dto_to_schema(
         user,
         UserNestedTasksSchema
@@ -69,7 +69,7 @@ async def update_assigned_lessons(
         **request.model_dump(),
     )
     user = await assignment_service.update_lessons(user_id, data)
-    await assignment_service.update_progress(user_id=user_id)
+    await assignment_service.update_progress_by_user_id(user_id=user_id)
     user = await dto_to_schema(
         user,
         UserNestedTasksSchema
@@ -82,13 +82,13 @@ async def update_assigned_lessons(
 async def update_assigned_courses(
         user_id: int = Query(),
         request: UpdateAssignedCoursesSchema = Body(),
-        assignment_service: AssignmentService = Depends(get_assignment_service),
+        assignment_service: AssignmentService = Depends(get_assignment_service)
 ):
     data = UpdateAssignedCoursesDTO(
         **request.model_dump(),
     )
     user = await assignment_service.update_courses(user_id, data)
-    await assignment_service.update_progress(user_id=user_id)
+    await assignment_service.update_progress_by_user_id(user_id=user_id)
     user = await dto_to_schema(
         user,
         UserNestedTasksSchema

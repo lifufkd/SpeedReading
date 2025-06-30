@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import Optional
 from datetime import datetime
 
 from src.schemas.enums import TaskTypes
@@ -22,9 +23,11 @@ class UsersProgressDTO(BaseModel):
     updated_at: datetime
 
 
-class CreateUsersProgressDTO(BaseModel):
-    user_id: int
-    exercise_id: int
+class FilterUsersTasksDTO(BaseModel):
+    users_tasks_id: Optional[int] = None
+    user_id: Optional[int] = None
+    task_id: Optional[int] = None
+    task_type: Optional[TaskTypes] = None
 
 
 class UpdateAssignedExercisesDTO(BaseModel):
