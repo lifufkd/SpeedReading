@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 from src.models.course import Courses
-from src.dto.courses import CreateCoursesDTO, UpdateCoursesDTO
+from src.dto.learning.courses import CreateCoursesDTO, UpdateCoursesDTO
 
 
 class CoursesAbstract(ABC):

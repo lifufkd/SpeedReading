@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from src.services.users.users import UsersService
 from src.uow.abstract import AbstractUoW
 from src.core.redis_client import async_redis_client
-from src.dto.users import GetUsersDTO
+from src.dto.users.auth import GetUserDTO
 from src.core.jwt import verify_password
 from src.core.orm_to_dto import sqlalchemy_to_pydantic
 
@@ -21,7 +21,7 @@ class AuthService:
 
         await async_redis_client.setex(jti, timedelta(seconds=ttl), "revoked")
 
-    async def get_user_by_id(self, user_id: int) -> GetUsersDTO | None:
+    async def get_user_by_id(self, user_id: int) -> GetUserDTO | None:
         async with self.uow as uow:
             user = await uow.user_repository.get_by_id(user_id)
             if not user:
@@ -29,11 +29,11 @@ class AuthService:
 
             user = await sqlalchemy_to_pydantic(
                 user,
-                GetUsersDTO
+                GetUserDTO
             )
             return user
 
-    async def authenticate_user(self, user_name: str, password: str) -> GetUsersDTO | None:
+    async def authenticate_user(self, user_name: str, password: str) -> GetUserDTO | None:
         user = await self.users_service.get_by_name(name=user_name)
         if not user:
             return None

@@ -2,10 +2,10 @@ from src.uow.abstract import AbstractUoW
 from src.core.exceptions import UserNotFound
 from src.validators.users import validate_user_is_student
 from src.schemas.enums import TaskTypes
-from src.dto.tasks import GetUserTaskTreeDTO
-from src.dto.exercises import GetExercisesDTO
-from src.dto.lessons import GetLessonNestedExercisesDTO
-from src.dto.courses import GetCourseFullNestedDTO
+from src.dto.student.tasks import GetUserTaskTreeDTO
+from src.dto.learning.exercises import GetExercisesDTO
+from src.dto.learning.lessons import GetLessonNestedExercisesDTO
+from src.dto.learning.courses import GetCourseFullNestedDTO
 from src.core.orm_to_dto import sqlalchemy_to_pydantic
 
 

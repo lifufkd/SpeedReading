@@ -1,16 +1,14 @@
 from pydantic import BaseModel
 from typing import Optional
-from datetime import datetime
 
 from src.schemas.enums import ExerciseTypes
+from src.dto.base import TimestampedDTO
 
 
-class GetExercisesDTO(BaseModel):
+class GetExercisesDTO(TimestampedDTO):
     exercise_id: int
     title: str
     type: ExerciseTypes
-    created_at: datetime
-    updated_at: datetime
 
 
 class GetNestedExercisesDTO(GetExercisesDTO):

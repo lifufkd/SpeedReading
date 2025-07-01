@@ -4,8 +4,8 @@ from src.uow.abstract import AbstractUoW
 from src.core.exceptions import LessonsNotFound, ExerciseNotFound, CoursesNotFound
 from src.core.orm_to_dto import many_sqlalchemy_to_pydantic
 from src.core.orm_to_dto import sqlalchemy_to_pydantic
-from src.dto.assignment import FilterUsersTasksDTO
-from src.dto.lessons import (
+from src.dto.learning.assignment import FilterUsersTasksDTO
+from src.dto.learning.lessons import (
     GetLessonsDTO,
     GetNestedLessonsDTO,
     UpdateLessonsCoursesDTO,

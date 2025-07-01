@@ -1,10 +1,10 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, delete
+from sqlalchemy import select
 
 from src.models.users_tasks import UsersTasks
 from src.repositories.abstract.users_tasks import UsersTasksAbstract
 from src.schemas.enums import TaskTypes
-from src.dto.assignment import FilterUsersTasksDTO
+from src.dto.learning.assignment import FilterUsersTasksDTO
 
 
 class UsersTasksRepository(UsersTasksAbstract):

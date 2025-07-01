@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 from src.models.users import Users
-from src.dto.users import CreateUsersDTO, UpdateUsersDTO
+from src.dto.users.base import CreateUserDTOBase, UpdateUserDTOBase
 
 
 class UserAbstract(ABC):
@@ -19,11 +19,11 @@ class UserAbstract(ABC):
         pass
 
     @abstractmethod
-    async def add(self, data: CreateUsersDTO) -> Users:
+    async def add(self, data: CreateUserDTOBase) -> Users:
         pass
 
     @abstractmethod
-    async def update(self, user_id: int, data: UpdateUsersDTO) -> Users | None:
+    async def update(self, user_id: int, data: UpdateUserDTOBase) -> Users | None:
         pass
 
     @abstractmethod

@@ -5,7 +5,7 @@ from src.dependencies.security import validate_token, validate_admin
 from src.dependencies.services import get_admin_panel_service
 from src.validators.users import validate_not_same_id
 from src.core.jwt import get_password_hash
-from src.dto.users import GetUsersDTO, CreateUsersDTO, UpdateUsersDTO
+from src.dto.users.admin_panel import GetUserDTO, CreateUserDTO, UpdateUserDTO
 from src.core.dto_to_schema import many_dto_to_schema, dto_to_schema
 from src.schemas.users.admin_panel import UserSchema, CreateUserSchema, UpdateUserSchema
 
@@ -34,7 +34,7 @@ async def create_user(
         admin_panel_service: AdminPanelService = Depends(get_admin_panel_service),
 ):
 
-    data = CreateUsersDTO(
+    data = CreateUserDTO(
         password_hash=get_password_hash(password=request.password),
         **request.model_dump()
     )
@@ -51,12 +51,12 @@ async def create_user(
 async def update_user(
         user_id: int = Path(),
         request: UpdateUserSchema = Body(),
-        current_user: GetUsersDTO = Depends(validate_token),
+        current_user: GetUserDTO = Depends(validate_token),
         admin_panel_service: AdminPanelService = Depends(get_admin_panel_service),
 ):
     await validate_not_same_id(user=current_user, user_id=user_id)
 
-    data = UpdateUsersDTO(
+    data = UpdateUserDTO(
         password_hash=get_password_hash(request.password) if request.password else None,
         **request.model_dump()
     )
@@ -72,7 +72,7 @@ async def update_user(
 @router.delete("/user/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_user(
         user_id: int = Path(),
-        current_user: GetUsersDTO = Depends(validate_token),
+        current_user: GetUserDTO = Depends(validate_token),
         admin_panel_service: AdminPanelService = Depends(get_admin_panel_service),
 ):
     await validate_not_same_id(user=current_user, user_id=user_id)

@@ -4,7 +4,7 @@ from sqlalchemy.orm import selectinload
 
 from src.models.exercise import Exercises
 from src.repositories.abstract.exercises import ExerciseAbstract
-from src.dto.exercises import CreateExerciseDTO, UpdateExerciseDTO
+from src.dto.learning.exercises import CreateExerciseDTO, UpdateExerciseDTO
 
 
 class ExerciseRepository(ExerciseAbstract):

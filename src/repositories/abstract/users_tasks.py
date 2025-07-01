@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 from src.schemas.enums import TaskTypes
 from src.models.users_tasks import UsersTasks
-from src.dto.assignment import FilterUsersTasksDTO
+from src.dto.learning.assignment import FilterUsersTasksDTO
 
 
 class UsersTasksAbstract(ABC):

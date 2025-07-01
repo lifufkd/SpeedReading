@@ -1,26 +1,22 @@
 from pydantic import BaseModel
 from typing import Optional
-from datetime import datetime
 
 from src.schemas.enums import TaskTypes
 from src.schemas.enums import ExerciseCompleteStatus
+from src.dto.base import TimestampedDTO
 
 
-class UsersTasksDTO(BaseModel):
+class UsersTasksDTO(TimestampedDTO):
     users_tasks_id: int
     user_id: int
     task_id: int
     task_type: TaskTypes
-    created_at: datetime
-    updated_at: datetime
 
 
-class UsersProgressDTO(BaseModel):
+class UsersProgressDTO(TimestampedDTO):
     user_id: int
     exercise_id: int
     status: ExerciseCompleteStatus
-    created_at: datetime
-    updated_at: datetime
 
 
 class FilterUsersTasksDTO(BaseModel):
