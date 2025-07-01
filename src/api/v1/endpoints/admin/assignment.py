@@ -9,7 +9,7 @@ from src.dto.learning.assignment import (
     UpdateAssignedCoursesDTO
 )
 from src.core.dto_to_schema import many_dto_to_schema, dto_to_schema
-from src.schemas.users.base import (
+from src.schemas.users.assignments import (
     UserNestedTasksSchema,
     UserNestedSchema
 )

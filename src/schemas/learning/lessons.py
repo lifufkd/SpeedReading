@@ -1,15 +1,13 @@
 from pydantic import BaseModel
 from typing import Optional
-from datetime import datetime
 
 from src.schemas.learning.base import UniqueFieldValidator
+from src.schemas.base import TimestampedSchema
 
 
-class LessonsSchema(BaseModel):
+class LessonsSchema(TimestampedSchema):
     lesson_id: int
     title: str
-    created_at: datetime
-    updated_at: datetime
 
 
 class LessonNestedExercisesSchema(LessonsSchema):
