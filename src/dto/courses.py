@@ -10,6 +10,11 @@ class GetCoursesDTO(BaseModel):
     updated_at: datetime
 
 
+class GetCourseFullNestedDTO(GetCoursesDTO):
+    lessons: list["GetLessonNestedExercisesDTO"]
+    exercises: list["GetExercisesDTO"]
+
+
 class GetNestedCoursesDTO(GetCoursesDTO):
     lessons: list["GetLessonsDTO"]
     exercises: list["GetExercisesDTO"]

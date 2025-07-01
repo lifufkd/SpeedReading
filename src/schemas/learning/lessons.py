@@ -12,6 +12,10 @@ class LessonsSchema(BaseModel):
     updated_at: datetime
 
 
+class LessonNestedExercisesSchema(LessonsSchema):
+    exercises: list["ExerciseSchema"]
+
+
 class LessonsNestedSchema(LessonsSchema):
     exercises: list["ExerciseSchema"]
     courses: list["CoursesSchema"]
