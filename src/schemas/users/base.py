@@ -1,30 +1,16 @@
 from pydantic import BaseModel, field_validator, EmailStr
 from typing import Optional
-from datetime import datetime
 
 from src.validators.users_schemas import validate_password_strength
 from src.schemas.enums import UsersRoles
+from src.schemas.base import TimestampedSchema
 
 
-class UserSchemaBase(BaseModel):
+class UserSchemaBase(TimestampedSchema):
     user_id: int
     login: str
     email: Optional[EmailStr]
     role: UsersRoles
-    created_at: datetime
-    updated_at: datetime
-
-
-class UserNestedTasksSchema(UserSchemaBase):
-    tasks: list["AssignmentSchema"]
-
-
-class UserNestedProgressSchema(UserSchemaBase):
-    progress: list["UsersProgressSchema"]
-
-
-class UserNestedSchema(UserNestedTasksSchema, UserNestedProgressSchema):
-    pass
 
 
 class PasswordValidatorBase(BaseModel):
