@@ -34,7 +34,7 @@ class AssignmentService:
             user = await uow.user_repository.get_by_id(user_id)
             if not user:
                 raise UserNotFound()
-            await validate_user_is_student(user)
+            await validate_user_is_student(user)   # TODO: User must be as DTO object
 
             exercises = await uow.exercise_repository.get_by_ids(data.add_exercises_ids + data.delete_exercises_ids)
             validate_all_ids_found(
@@ -77,7 +77,7 @@ class AssignmentService:
             user = await uow.user_repository.get_by_id(user_id)
             if not user:
                 raise UserNotFound()
-            await validate_user_is_student(user)
+            await validate_user_is_student(user)  # TODO: User must be as DTO object
 
             lessons = await uow.lesson_repository.get_by_ids(data.add_lessons_ids + data.delete_lessons_ids)
             validate_all_ids_found(
@@ -120,7 +120,7 @@ class AssignmentService:
             user = await uow.user_repository.get_by_id(user_id)
             if not user:
                 raise UserNotFound()
-            await validate_user_is_student(user)
+            await validate_user_is_student(user)  # TODO: User must be as DTO object
 
             courses = await uow.course_repository.get_by_ids(data.add_courses_ids + data.delete_courses_ids)
             validate_all_ids_found(
@@ -208,7 +208,7 @@ class AssignmentService:
             user = await uow.user_repository.get_by_id(user_id)
             if not user:
                 raise UserNotFound()
-            await validate_user_is_student(user)
+            await validate_user_is_student(user)  # TODO: User must be as DTO object
 
             user = await self._update_students_progress(user, uow)
             return user
@@ -219,6 +219,7 @@ class AssignmentService:
             users = await uow.user_repository.get_all_students()
 
             for user in users:
+                # TODO: Add validation is student
                 _user = await self._update_students_progress(user, uow)
                 updated_users.append(_user)
 

@@ -1,5 +1,6 @@
 from fastapi import Depends
 
+from src.services.student.task import TasksService
 from src.services.learning.assignment import AssignmentService
 from src.services.learning.course import CourseService
 from src.services.learning.lesson import LessonService
@@ -37,3 +38,7 @@ async def get_course_service(uow: AbstractUoW = Depends(get_uow)):
 
 async def get_assignment_service(uow: AbstractUoW = Depends(get_uow)):
     return AssignmentService(uow)
+
+
+async def get_tasks_service(uow: AbstractUoW = Depends(get_uow)):
+    return TasksService(uow)
