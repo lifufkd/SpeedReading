@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 from src.models.exercise import Exercises
-from src.dto.exercises import CreateExerciseDTO, UpdateExerciseDTO
+from src.dto.learning.exercises import CreateExerciseDTO, UpdateExerciseDTO
 
 
 class ExerciseAbstract(ABC):

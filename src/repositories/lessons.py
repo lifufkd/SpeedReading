@@ -4,7 +4,7 @@ from sqlalchemy.orm import selectinload
 
 from src.models.lesson import Lessons
 from src.repositories.abstract.lessons import LessonsAbstract
-from src.dto.lessons import CreateLessonsDTO, UpdateLessonsDTO
+from src.dto.learning.lessons import CreateLessonsDTO, UpdateLessonsDTO
 
 
 class LessonRepository(LessonsAbstract):

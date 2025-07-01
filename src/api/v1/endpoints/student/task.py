@@ -1,9 +1,9 @@
-from fastapi import APIRouter, status, Depends, Body, Path
+from fastapi import APIRouter, status, Depends
 
 from src.services.student.task import TasksService
 from src.dependencies.security import validate_token
 from src.dependencies.services import get_tasks_service
-from src.dto.users import GetUsersDTO
+from src.dto.users.auth import GetUserDTO
 from src.schemas.student.tasks import UserTaskTreeSchema
 from src.core.dto_to_schema import dto_to_schema
 
@@ -12,7 +12,7 @@ router = APIRouter()
 
 @router.get("", status_code=status.HTTP_200_OK, response_model=UserTaskTreeSchema)
 async def get_tasks(
-        current_user: GetUsersDTO = Depends(validate_token),
+        current_user: GetUserDTO = Depends(validate_token),
         tasks_service: TasksService = Depends(get_tasks_service),
 ):
 

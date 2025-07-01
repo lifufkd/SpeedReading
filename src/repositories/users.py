@@ -4,7 +4,7 @@ from sqlalchemy.orm import selectinload
 
 from src.models.users import Users
 from src.repositories.abstract.users import UserAbstract
-from src.dto.users import UpdateUsersDTO, CreateUsersDTO
+from src.dto.users.base import UpdateUserDTOBase, CreateUserDTOBase
 from src.schemas.enums import UsersRoles
 
 
@@ -51,7 +51,7 @@ class UserRepository(UserAbstract):
         user = result.scalar_one_or_none()
         return user
 
-    async def add(self, data: CreateUsersDTO) -> Users:
+    async def add(self, data: CreateUserDTOBase) -> Users:
         new_user = Users(
             **data.model_dump(exclude_none=True)
         )
@@ -61,7 +61,7 @@ class UserRepository(UserAbstract):
 
         return new_user
 
-    async def update(self, user_id: int, data: UpdateUsersDTO) -> Users | None:
+    async def update(self, user_id: int, data: UpdateUserDTOBase) -> Users | None:
         user = await self.get_by_id(user_id)
         if not user:
             return None

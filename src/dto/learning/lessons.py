@@ -1,13 +1,12 @@
 from pydantic import BaseModel
 from typing import Optional
-from datetime import datetime
+
+from src.dto.base import TimestampedDTO
 
 
-class GetLessonsDTO(BaseModel):
+class GetLessonsDTO(TimestampedDTO):
     lesson_id: int
     title: str
-    created_at: datetime
-    updated_at: datetime
 
 
 class GetLessonNestedExercisesDTO(GetLessonsDTO):

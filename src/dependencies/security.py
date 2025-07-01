@@ -4,7 +4,7 @@ from fastapi_jwt_auth import AuthJWT
 from src.services.auth.auth import AuthService
 from src.dependencies.services import get_auth_service
 from src.core.exceptions import UserNotFound
-from src.dto.users import GetUsersDTO
+from src.dto.users.auth import GetUserDTO
 from src.schemas.enums import UsersRoles
 from src.core.exceptions import UserIsNotAdmin, JWTError
 
@@ -12,7 +12,7 @@ from src.core.exceptions import UserIsNotAdmin, JWTError
 async def validate_token(
         authorize: AuthJWT = Depends(),
         auth_service: AuthService = Depends(get_auth_service)
-) -> GetUsersDTO:
+) -> GetUserDTO:
     authorize.jwt_required()
 
     claims = authorize.get_raw_jwt()
@@ -26,6 +26,6 @@ async def validate_token(
     return user
 
 
-async def validate_admin(current_user: GetUsersDTO = Depends(validate_token)) -> None:
+async def validate_admin(current_user: GetUserDTO = Depends(validate_token)) -> None:
     if current_user.role != UsersRoles.ADMIN:
         raise UserIsNotAdmin()

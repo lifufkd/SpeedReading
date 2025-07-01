@@ -5,7 +5,7 @@ from sqlalchemy.orm import selectinload
 from src.models.course import Courses
 from src.models.lesson import Lessons
 from src.repositories.abstract.courses import CoursesAbstract
-from src.dto.courses import CreateCoursesDTO, UpdateCoursesDTO
+from src.dto.learning.courses import CreateCoursesDTO, UpdateCoursesDTO
 
 
 class CourseRepository(CoursesAbstract):

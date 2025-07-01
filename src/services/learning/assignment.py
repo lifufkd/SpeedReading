@@ -2,7 +2,7 @@ from src.uow.abstract import AbstractUoW
 from src.core.exceptions import ExerciseNotFound, UserNotFound, LessonsNotFound, CoursesNotFound
 from src.core.orm_to_dto import many_sqlalchemy_to_pydantic, sqlalchemy_to_pydantic
 from src.dto.users import GetUserNestedTasksDTO, GetUserNestedProgressDTO, GetUserNestedDTO
-from src.dto.assignment import (
+from src.dto.learning.assignment import (
     UpdateAssignedExercisesDTO,
     UpdateAssignedLessonsDTO,
     UpdateAssignedCoursesDTO

@@ -2,7 +2,7 @@ from src.database.session import get_session
 from src.services.users.super_admin_init import SuperAdminInitService
 from src.uow.sqlalchemy_uow import SQLAlchemyUoW
 from src.core.config import generic_settings
-from src.dto.users import CreateUsersDTO
+from src.dto.users.base import CreateUserDTOBase
 from src.core.jwt import get_password_hash
 from src.schemas.enums import UsersRoles
 
@@ -16,7 +16,7 @@ async def create_super_admin():
 
         sqlalchemy_uow = SQLAlchemyUoW(session)
         super_admin_init_service = SuperAdminInitService(sqlalchemy_uow)
-        data = CreateUsersDTO(
+        data = CreateUserDTOBase(
             login=super_admin_login,
             password_hash=get_password_hash(super_admin_password),
             role=UsersRoles.ADMIN

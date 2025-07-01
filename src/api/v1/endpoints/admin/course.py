@@ -1,12 +1,10 @@
 from fastapi import APIRouter, status, Depends, Body, Path
 
-import src.schemas.learning # noqa
-import src.dto # noqa
 from src.services.learning.course import CourseService
 from src.services.learning.assignment import AssignmentService
 from src.dependencies.security import validate_token, validate_admin
 from src.dependencies.services import get_course_service, get_assignment_service
-from src.dto.courses import (
+from src.dto.learning.courses import (
     CreateCoursesDTO,
     UpdateCoursesDTO,
     UpdateCoursesExerciseDTO,

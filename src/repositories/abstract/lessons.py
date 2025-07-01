@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 from src.models.lesson import Lessons
-from src.dto.lessons import CreateLessonsDTO, UpdateLessonsDTO
+from src.dto.learning.lessons import CreateLessonsDTO, UpdateLessonsDTO
 
 
 class LessonsAbstract(ABC):
