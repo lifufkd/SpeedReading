@@ -9,6 +9,7 @@ from src.services.learning.exercise import ExerciseService
 from src.services.auth.auth import AuthService
 from src.services.users.admin_panel import AdminPanelService
 from src.services.users.profile import ProfileService
+from src.services.student.exercise import ExerciseService as StudentExerciseService
 from src.uow.abstract import AbstractUoW
 from src.dependencies.uow import get_uow
 
@@ -47,3 +48,7 @@ async def get_tasks_service(uow: AbstractUoW = Depends(get_uow)):
 
 async def get_progress_service(uow: AbstractUoW = Depends(get_uow)):
     return ProgressService(uow)
+
+
+async def get_student_exercise_service(uow: AbstractUoW = Depends(get_uow)):
+    return StudentExerciseService(uow)
