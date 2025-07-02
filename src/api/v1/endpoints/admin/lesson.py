@@ -7,8 +7,7 @@ from src.dependencies.services import get_lesson_service, get_assignment_service
 from src.dto.learning.lessons import (
     CreateLessonsDTO,
     UpdateLessonsDTO,
-    UpdateLessonsExerciseDTO,
-    UpdateLessonsCoursesDTO
+    UpdateLessonsExerciseDTO
 )
 from src.core.dto_to_schema import many_dto_to_schema, dto_to_schema
 from src.schemas.learning.lessons import (
@@ -16,8 +15,7 @@ from src.schemas.learning.lessons import (
     LessonsSchema,
     CreateLessonsSchema,
     UpdateLessonsSchema,
-    UpdateLessonsExerciseSchema,
-    UpdateLessonsCoursesSchema
+    UpdateLessonsExerciseSchema
 )
 
 router = APIRouter(
@@ -93,26 +91,6 @@ async def update_lesson_exercises(
         **request.model_dump()
     )
     lesson = await lesson_service.update_exercises(lesson_id, data)
-    await assignment_service.update_progress()
-    lesson = await dto_to_schema(
-        lesson,
-        LessonsNestedSchema
-    )
-
-    return lesson
-
-
-@router.patch("/{lesson_id}/courses", status_code=status.HTTP_200_OK, response_model=LessonsNestedSchema)
-async def update_lesson_courses(
-        lesson_id: int = Path(),
-        request: UpdateLessonsCoursesSchema = Body(),
-        lesson_service: LessonService = Depends(get_lesson_service),
-        assignment_service: AssignmentService = Depends(get_assignment_service)
-):
-    data = UpdateLessonsCoursesDTO(
-        **request.model_dump()
-    )
-    lesson = await lesson_service.update_courses(lesson_id, data)
     await assignment_service.update_progress()
     lesson = await dto_to_schema(
         lesson,

@@ -1,23 +1,18 @@
 from fastapi import APIRouter, status, Depends, Body, Path
 
 from src.services.learning.exercise import ExerciseService
-from src.services.learning.assignment import AssignmentService
 from src.dependencies.security import validate_token, validate_admin
-from src.dependencies.services import get_exercise_service, get_assignment_service
+from src.dependencies.services import get_exercise_service
 from src.dto.learning.exercises import (
     CreateExerciseDTO,
-    UpdateExerciseDTO,
-    UpdateExerciseLessonsDTO,
-    UpdateExerciseCoursesDTO
+    UpdateExerciseDTO
 )
 from src.core.dto_to_schema import many_dto_to_schema, dto_to_schema
 from src.schemas.learning.exercise import (
     ExerciseNestedSchema,
     CreateExerciseSchema,
     ExerciseSchema,
-    UpdateExerciseSchema,
-    UpdateExerciseLessonsSchema,
-    UpdateExerciseCoursesSchema
+    UpdateExerciseSchema
 
 )
 
@@ -81,43 +76,3 @@ async def delete_exercise(
         exercise_service: ExerciseService = Depends(get_exercise_service)
 ):
     await exercise_service.delete(exercise_id)
-
-
-@router.patch("/{exercise_id}/lessons", status_code=status.HTTP_200_OK, response_model=ExerciseNestedSchema)
-async def update_exercise_to_lessons(
-        exercise_id: int = Path(),
-        request: UpdateExerciseLessonsSchema = Body(),
-        exercise_service: ExerciseService = Depends(get_exercise_service),
-        assignment_service: AssignmentService = Depends(get_assignment_service)
-):
-    data = UpdateExerciseLessonsDTO(
-        **request.model_dump()
-    )
-    exercise = await exercise_service.update_lessons(exercise_id, data)
-    await assignment_service.update_progress()
-    exercise = await dto_to_schema(
-        exercise,
-        ExerciseNestedSchema
-    )
-
-    return exercise
-
-
-@router.patch("/{exercise_id}/courses", status_code=status.HTTP_200_OK, response_model=ExerciseNestedSchema)
-async def update_exercise_to_courses(
-        exercise_id: int = Path(),
-        request: UpdateExerciseCoursesSchema = Body(),
-        exercise_service: ExerciseService = Depends(get_exercise_service),
-        assignment_service: AssignmentService = Depends(get_assignment_service)
-):
-    data = UpdateExerciseCoursesDTO(
-        **request.model_dump()
-    )
-    exercise = await exercise_service.update_courses(exercise_id, data)
-    await assignment_service.update_progress()
-    exercise = await dto_to_schema(
-        exercise,
-        ExerciseNestedSchema
-    )
-
-    return exercise

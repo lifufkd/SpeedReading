@@ -10,7 +10,7 @@ from src.core.dto_to_schema import dto_to_schema
 router = APIRouter()
 
 
-@router.get("", status_code=status.HTTP_200_OK, response_model=UserTaskTreeSchema)
+@router.get("/tasks", status_code=status.HTTP_200_OK, response_model=UserTaskTreeSchema)
 async def get_tasks(
         current_user: GetUserDTO = Depends(validate_token),
         tasks_service: TasksService = Depends(get_tasks_service),

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, status, Depends, Query, Body
+from fastapi import APIRouter, status, Depends, Path, Body
 
 from src.services.student.progress import ProgressService
 from src.dependencies.security import validate_token
@@ -12,7 +12,7 @@ from src.core.dto_to_schema import dto_to_schema
 router = APIRouter()
 
 
-@router.get("", status_code=status.HTTP_200_OK, response_model=UserNestedProgressSchema)
+@router.get("/progresses", status_code=status.HTTP_200_OK, response_model=UserNestedProgressSchema)
 async def get_progress(
         current_user: GetUserDTO = Depends(validate_token),
         progress_service: ProgressService = Depends(get_progress_service),
@@ -26,9 +26,9 @@ async def get_progress(
     return tasks
 
 
-@router.patch("", status_code=status.HTTP_200_OK, response_model=UserProgressSchema)
+@router.put("/{exercise_id}/progress", status_code=status.HTTP_200_OK, response_model=UserProgressSchema)
 async def update_progress_status(
-        exercise_id: int = Query(),
+        exercise_id: int = Path(),
         request: UpdateUserProgressSchema = Body(),
         current_user: GetUserDTO = Depends(validate_token),
         progress_service: ProgressService = Depends(get_progress_service),

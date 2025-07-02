@@ -1,4 +1,4 @@
-from fastapi import APIRouter, status, Depends, Query, Body
+from fastapi import APIRouter, status, Depends, Body, Path
 
 from src.services.learning.assignment import AssignmentService
 from src.dependencies.security import validate_token, validate_admin
@@ -24,7 +24,7 @@ router = APIRouter(
 )
 
 
-@router.get("/users", response_model=list[UserNestedSchema], status_code=status.HTTP_200_OK)
+@router.get("/assignments", response_model=list[UserNestedSchema], status_code=status.HTTP_200_OK)
 async def get_users(
         assignment_service: AssignmentService = Depends(get_assignment_service),
 ):
@@ -38,9 +38,9 @@ async def get_users(
     return users
 
 
-@router.patch("/exercises", response_model=UserNestedTasksSchema, status_code=status.HTTP_200_OK)
+@router.patch("/{user_id}/assignments/exercises", response_model=UserNestedTasksSchema, status_code=status.HTTP_200_OK)
 async def update_assigned_exercises(
-        user_id: int = Query(),
+        user_id: int = Path(),
         request: UpdateAssignedExercisesSchema = Body(),
         assignment_service: AssignmentService = Depends(get_assignment_service),
 ):
@@ -57,9 +57,9 @@ async def update_assigned_exercises(
     return user
 
 
-@router.patch("/lessons", response_model=UserNestedTasksSchema, status_code=status.HTTP_200_OK)
+@router.patch("/{user_id}/assignments/lessons", response_model=UserNestedTasksSchema, status_code=status.HTTP_200_OK)
 async def update_assigned_lessons(
-        user_id: int = Query(),
+        user_id: int = Path(),
         request: UpdateAssignedLessonsSchema = Body(),
         assignment_service: AssignmentService = Depends(get_assignment_service),
 ):
@@ -76,9 +76,9 @@ async def update_assigned_lessons(
     return user
 
 
-@router.patch("/courses", response_model=UserNestedTasksSchema, status_code=status.HTTP_200_OK)
+@router.patch("/{user_id}/assignments/courses", response_model=UserNestedTasksSchema, status_code=status.HTTP_200_OK)
 async def update_assigned_courses(
-        user_id: int = Query(),
+        user_id: int = Path(),
         request: UpdateAssignedCoursesSchema = Body(),
         assignment_service: AssignmentService = Depends(get_assignment_service)
 ):

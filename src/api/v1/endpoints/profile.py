@@ -12,7 +12,7 @@ from src.core.dto_to_schema import dto_to_schema
 router = APIRouter()
 
 
-@router.get("/me", status_code=status.HTTP_200_OK, response_model=UserSchema)
+@router.get("", status_code=status.HTTP_200_OK, response_model=UserSchema)
 async def get_my_profile(
         current_user: GetUserDTO = Depends(validate_token)
 ):
@@ -22,7 +22,7 @@ async def get_my_profile(
     return user
 
 
-@router.patch("/me", status_code=status.HTTP_200_OK, response_model=UserSchema)
+@router.patch("", status_code=status.HTTP_200_OK, response_model=UserSchema)
 async def update_my_profile(
         request: UpdateProfileSchema = Body(),
         current_user: GetUserDTO = Depends(validate_token),
@@ -41,7 +41,7 @@ async def update_my_profile(
     return user
 
 
-@router.delete("/me", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_my_profile(
         current_user: GetUserDTO = Depends(validate_token),
         profile_service: ProfileService = Depends(get_profile_service)
