@@ -2,6 +2,7 @@ from fastapi import APIRouter
 from src.api.v1.endpoints import auth, profile
 from src.api.v1.endpoints.admin import admin_panel, exercise, lesson, course, assignment
 from src.api.v1.endpoints.student import task, progress
+from src.api.v1.endpoints.student import exercise as student_exercise
 
 api_v1_router = APIRouter()
 
@@ -58,4 +59,10 @@ api_v1_router.include_router(
     progress.router,
     prefix="/student/progress",
     tags=["Progress"]
+)
+
+api_v1_router.include_router(
+    student_exercise.router,
+    prefix="/student/exercise",
+    tags=["Student exercise"]
 )
