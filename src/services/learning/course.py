@@ -1,5 +1,4 @@
-from functools import partial
-
+from src.services.learning.helper import LearningHelper
 from src.uow.abstract import AbstractUoW
 from src.core.exceptions import CoursesNotFound, ExerciseNotFound, LessonsNotFound
 from src.core.orm_to_dto import many_sqlalchemy_to_pydantic
@@ -10,17 +9,15 @@ from src.dto.learning.courses import (
     GetNestedCoursesDTO,
     CreateCoursesDTO,
     UpdateCoursesDTO,
-    UpdateCoursesExerciseDTO,
-    UpdateCoursesLessonsDTO
+    UpdateCourseRelationDTO
 )
 from src.schemas.enums import TaskTypes
-from src.validators.common import is_number_in_list, is_number_not_in_list
-from src.services.utils.validate_all_ids_found import validate_all_ids_found
 
 
 class CourseService:
     def __init__(self, uow: AbstractUoW):
         self.uow = uow
+        self.learning_helper = LearningHelper()
 
     async def get_by_id(self, course_id: int) -> GetCoursesDTO:
         async with self.uow as uow:
@@ -45,33 +42,22 @@ class CourseService:
 
             return courses
 
-    async def update_exercises(self, course_id: int, data: UpdateCoursesExerciseDTO) -> GetNestedCoursesDTO:
+    async def update_exercises(self, course_id: int, data: UpdateCourseRelationDTO) -> GetNestedCoursesDTO:
         async with self.uow as uow:
             course = await uow.course_repository.get_by_id(course_id)
             if not course:
                 raise CoursesNotFound()
-            existed_exercises_ids = [exercise.exercise_id for exercise in course.exercises]
 
-            exercises = await uow.exercise_repository.get_by_ids(data.add_exercises_ids + data.delete_exercises_ids)
-            validate_all_ids_found(
-                input_ids=data.add_exercises_ids + data.delete_exercises_ids,
-                founded_objects=exercises,
-                id_getter_function=lambda exercise: exercise.exercise_id,
-                exception_builder=ExerciseNotFound
+            await self.learning_helper.update_relation(
+                entity=course,
+                add_ids=data.add_ids,
+                delete_ids=data.delete_ids,
+                get_related=lambda c: c.exercises,
+                id_getter=lambda e: e.exercise_id,
+                repo_get_by_ids=uow.exercise_repository.get_by_ids,
+                exception=ExerciseNotFound,
+                uow=uow,
             )
-
-            data.add_exercises_ids = list(
-                filter(partial(is_number_not_in_list, list_=existed_exercises_ids), data.add_exercises_ids))
-            data.delete_exercises_ids = list(
-                filter(partial(is_number_in_list, list_=existed_exercises_ids), data.delete_exercises_ids))
-
-            for exercise in exercises:
-                if exercise.exercise_id in data.add_exercises_ids:
-                    course.exercises.append(exercise)
-                elif exercise.exercise_id in data.delete_exercises_ids:
-                    course.exercises.remove(exercise)
-
-            await uow.flush()
 
             course = await sqlalchemy_to_pydantic(
                 course,
@@ -80,33 +66,22 @@ class CourseService:
 
             return course
 
-    async def update_lessons(self, course_id: int, data: UpdateCoursesLessonsDTO) -> GetNestedCoursesDTO:
+    async def update_lessons(self, course_id: int, data: UpdateCourseRelationDTO) -> GetNestedCoursesDTO:
         async with self.uow as uow:
             course = await uow.course_repository.get_by_id(course_id)
             if not course:
                 raise CoursesNotFound()
-            existed_lessons_ids = [lesson.lesson_id for lesson in course.lessons]
 
-            lessons = await uow.lesson_repository.get_by_ids(data.add_lessons_ids + data.delete_lessons_ids)
-            validate_all_ids_found(
-                input_ids=data.add_lessons_ids + data.delete_lessons_ids,
-                founded_objects=lessons,
-                id_getter_function=lambda lesson: lesson.lesson_id,
-                exception_builder=LessonsNotFound
+            await self.learning_helper.update_relation(
+                entity=course,
+                add_ids=data.add_ids,
+                delete_ids=data.delete_ids,
+                get_related=lambda c: c.lessons,
+                id_getter=lambda l: l.lesson_id,
+                repo_get_by_ids=uow.lesson_repository.get_by_ids,
+                exception=LessonsNotFound,
+                uow=uow,
             )
-
-            data.add_lessons_ids = list(
-                filter(partial(is_number_not_in_list, list_=existed_lessons_ids), data.add_lessons_ids))
-            data.delete_lessons_ids = list(
-                filter(partial(is_number_in_list, list_=existed_lessons_ids), data.delete_lessons_ids))
-
-            for lesson in lessons:
-                if lesson.lesson_id in data.add_lessons_ids:
-                    course.lessons.append(lesson)
-                elif lesson.lesson_id in data.delete_lessons_ids:
-                    course.lessons.remove(lesson)
-
-            await uow.flush()
 
             course = await sqlalchemy_to_pydantic(
                 course,

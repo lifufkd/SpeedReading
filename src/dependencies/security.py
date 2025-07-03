@@ -6,7 +6,7 @@ from src.dependencies.services import get_auth_service
 from src.core.exceptions import UserNotFound
 from src.dto.users.auth import GetUserDTO
 from src.schemas.enums import UsersRoles
-from src.core.exceptions import UserIsNotAdmin, JWTError
+from src.core.exceptions import UserIsNotAdmin, JWTError, UserIsNotStudent
 
 
 async def validate_token(
@@ -29,3 +29,8 @@ async def validate_token(
 async def validate_admin(current_user: GetUserDTO = Depends(validate_token)) -> None:
     if current_user.role != UsersRoles.ADMIN:
         raise UserIsNotAdmin()
+
+
+async def validate_student(current_user: GetUserDTO = Depends(validate_token)) -> None:
+    if current_user.role != UsersRoles.USER:
+        raise UserIsNotStudent()

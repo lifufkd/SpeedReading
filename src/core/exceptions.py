@@ -85,3 +85,13 @@ class AssignedTasksNotFound(AppException):
         else:
             msg = "Assigned not found"
         super().__init__(detail=msg, status_code=404)
+
+
+class UpdateRelationIdsInvalid(AppException):
+    def __init__(self, wrong_add_ids: list[int] | None = None, wrong_delete_ids: list[int] | None = None):
+        msg = "Relation update ids invalid:"
+        if wrong_add_ids:
+            msg = msg + f" add_ids already existed in relation: ({','.join(map(str, wrong_add_ids))}),"
+        if wrong_delete_ids:
+            msg = msg + f" delete_ids not existed in relation: ({','.join(map(str, wrong_delete_ids))})"
+        super().__init__(detail=msg, status_code=422)

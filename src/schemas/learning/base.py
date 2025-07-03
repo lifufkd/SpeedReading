@@ -1,19 +1,20 @@
 from pydantic import BaseModel, model_validator, Field
 
-from src.validators.common_schemas import validate_at_least_one_filled, ensure_no_duplicates_across_fields
+from src.validators.common_schemas import validate_non_empty, validate_no_duplicates
 from src.schemas.enums import TaskTypes
 
 
 class UniqueFieldValidator(BaseModel):
     @model_validator(mode='after')
-    def validate_model(cls, model):
-        data = model.model_dump()
-        validate_at_least_one_filled(data)
-        ensure_no_duplicates_across_fields(data)
-        return model
+    def validate_lists_non_empty(self):
+        return validate_non_empty(self)
+
+    @model_validator(mode='after')
+    def validate_lists_no_duplicates(self):
+        return validate_no_duplicates(self)
 
 
 class UpdateTaskRelationSchemaBase(UniqueFieldValidator):
-    task_type: TaskTypes
+    type: TaskTypes
     add_ids: list[int] = Field(default_factory=list)
     delete_ids: list[int] = Field(default_factory=list)

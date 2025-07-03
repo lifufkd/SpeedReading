@@ -1,7 +1,11 @@
-from fastapi import APIRouter
-from src.api.v1.endpoints.admin import admin_panel, exercise, lesson, course, assignment
+from fastapi import APIRouter, Depends
 
-admin_router = APIRouter()
+from src.api.v1.endpoints.admin import admin_panel, exercise, lesson, course, assignment
+from src.dependencies.security import validate_admin
+
+admin_router = APIRouter(
+    dependencies=[Depends(validate_admin)]
+)
 
 admin_router.include_router(admin_panel.router, tags=["Admin panel"])
 admin_router.include_router(exercise.router, prefix="/exercises", tags=["Exercises"])

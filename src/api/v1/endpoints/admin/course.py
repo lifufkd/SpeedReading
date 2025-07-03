@@ -3,7 +3,6 @@ from fastapi import APIRouter, status, Depends, Body, Path
 from src.core.exceptions import TaskTypeNotSupported
 from src.services.learning.course import CourseService
 from src.services.learning.assignment import AssignmentService
-from src.dependencies.security import validate_token, validate_admin
 from src.dependencies.services import get_course_service, get_assignment_service
 from src.dto.learning.courses import (
     CreateCoursesDTO,
@@ -20,9 +19,7 @@ from src.schemas.learning.courses import (
     UpdateCourseRelationSchema
 )
 
-router = APIRouter(
-    dependencies=[Depends(validate_token), Depends(validate_admin)],
-)
+router = APIRouter()
 
 
 @router.get("", status_code=status.HTTP_200_OK, response_model=list[CoursesNestedSchema])
@@ -92,7 +89,7 @@ async def update_course_tasks(
     data = UpdateCourseRelationDTO(
         **request.model_dump()
     )
-    match data.task_type:
+    match data.type:
         case TaskTypes.EXERCISE:
             task = await course_service.update_exercises(course_id, data)
         case TaskTypes.LESSON:

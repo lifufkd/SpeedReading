@@ -1,6 +1,5 @@
 from src.uow.abstract import AbstractUoW
 from src.core.exceptions import UserNotFound, ExerciseNotFound
-from src.validators.users import validate_user_is_student
 from src.core.orm_to_dto import sqlalchemy_to_pydantic
 from src.dto.student.exercise import GetDarkenedExerciseDTO
 
@@ -14,7 +13,6 @@ class ExerciseService:
             user = await uow.user_repository.get_by_id(user_id)
             if not user:
                 raise UserNotFound()
-            await validate_user_is_student(user)   # TODO: User must be as DTO object
 
             exercise = await uow.exercise_repository.get_by_id(exercise_id)
             if not exercise:

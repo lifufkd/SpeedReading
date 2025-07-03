@@ -1,7 +1,6 @@
 from fastapi import APIRouter, status, Depends, Body, Path
 
 from src.services.learning.exercise import ExerciseService
-from src.dependencies.security import validate_token, validate_admin
 from src.dependencies.services import get_exercise_service
 from src.dto.learning.exercises import (
     CreateExerciseDTO,
@@ -16,9 +15,7 @@ from src.schemas.learning.exercise import (
 
 )
 
-router = APIRouter(
-    dependencies=[Depends(validate_token), Depends(validate_admin)],
-)
+router = APIRouter()
 
 
 @router.get("", status_code=status.HTTP_200_OK, response_model=list[ExerciseNestedSchema])

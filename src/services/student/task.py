@@ -1,6 +1,5 @@
 from src.uow.abstract import AbstractUoW
 from src.core.exceptions import UserNotFound
-from src.validators.users import validate_user_is_student
 from src.schemas.enums import TaskTypes
 from src.dto.student.tasks import GetUserTaskTreeDTO
 from src.dto.learning.exercises import GetExercisesDTO
@@ -18,7 +17,6 @@ class TasksService:
             user = await uow.user_repository.get_by_id(user_id)
             if not user:
                 raise UserNotFound()
-            await validate_user_is_student(user)   # TODO: User must be as DTO object
 
             user_tasks_tree = GetUserTaskTreeDTO()
             for task in user.tasks:

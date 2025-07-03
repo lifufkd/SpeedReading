@@ -1,5 +1,5 @@
 from src.schemas.enums import TaskTypes, ExerciseCompleteStatus
-from src.schemas.learning.base import UniqueFieldValidator
+from src.schemas.learning.base import UpdateTaskRelationSchemaBase
 from src.schemas.base import TimestampedSchema
 
 
@@ -16,16 +16,5 @@ class UsersProgressSchema(TimestampedSchema):
     status: ExerciseCompleteStatus
 
 
-class UpdateAssignedExercisesSchema(UniqueFieldValidator):
-    add_exercises_ids: list[int]
-    delete_exercises_ids: list[int]
-
-
-class UpdateAssignedLessonsSchema(UniqueFieldValidator):
-    add_lessons_ids: list[int]
-    delete_lessons_ids: list[int]
-
-
-class UpdateAssignedCoursesSchema(UniqueFieldValidator):
-    add_courses_ids: list[int]
-    delete_courses_ids: list[int]
+class UpdateAssignedTasksSchema(UpdateTaskRelationSchemaBase):
+    pass
