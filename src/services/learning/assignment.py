@@ -11,6 +11,7 @@ from src.models.m2m import UsersProgress
 from src.models.users import Users
 from src.validators.users import validate_user_is_student
 from src.validators.common import is_update_relation_ids_is_valid, validate_all_ids_found
+from src.services.student.utils import extract_exercise_ids_from_tasks
 
 
 T = TypeVar("T")
@@ -144,30 +145,10 @@ class AssignmentService:
             return user
 
     async def _update_students_progress(self, user: Users, uow) -> GetUserNestedProgressDTO:
-        user_tasks = user.tasks
         user_progress = user.progress
-        user_tasks_exercises_ids = set()
+
+        user_tasks_exercises_ids = await extract_exercise_ids_from_tasks(user, uow)
         user_progress_exercises_ids = [progress.exercise_id for progress in user_progress]
-
-        for task in user_tasks:
-            match task.task_type:
-                case TaskTypes.EXERCISE:
-                    user_tasks_exercises_ids.add(task.task_id)
-                case TaskTypes.LESSON:
-                    lesson = await uow.lesson_repository.get_by_id(task.task_id)
-                    if not lesson:
-                        continue
-
-                    user_tasks_exercises_ids.update([exercise.exercise_id for exercise in lesson.exercises])
-                case TaskTypes.COURSE:
-                    course = await uow.course_repository.get_by_id(task.task_id)
-                    if not course:
-                        continue
-
-                    for lesson in course.lessons:
-                        user_tasks_exercises_ids.update([exercise.exercise_id for exercise in lesson.exercises])
-                    for exercise in course.exercises:
-                        user_tasks_exercises_ids.add(exercise.exercise_id)
 
         for task_exercise_id in user_tasks_exercises_ids:
             if task_exercise_id in user_progress_exercises_ids:

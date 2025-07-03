@@ -2,6 +2,7 @@ from src.uow.abstract import AbstractUoW
 from src.core.exceptions import UserNotFound, ExerciseNotFound
 from src.core.orm_to_dto import sqlalchemy_to_pydantic
 from src.schemas.enums import ExerciseTypes
+from src.services.student.utils import extract_exercise_ids_from_tasks
 from src.dto.student.exercise import (
     GetDarkenedExerciseDTO,
     GetBlocksExerciseDTO,
@@ -27,6 +28,10 @@ class ExerciseService:
 
             exercise = await uow.exercise_repository.get_by_id(exercise_id)
             if not exercise:
+                raise ExerciseNotFound()
+
+            user_exercises_ids = await extract_exercise_ids_from_tasks(user, uow)
+            if exercise_id not in user_exercises_ids:
                 raise ExerciseNotFound()
 
             schema_map = {
