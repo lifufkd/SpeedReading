@@ -8,7 +8,6 @@ from src.dto.learning.assignment import FilterUsersTasksDTO
 from src.dto.learning.lessons import (
     GetLessonsDTO,
     GetNestedLessonsDTO,
-    UpdateLessonsCoursesDTO,
     UpdateLessonsExerciseDTO,
     UpdateLessonsDTO,
     CreateLessonsDTO
@@ -70,41 +69,6 @@ class LessonService:
                     lesson.exercises.append(exercise)
                 elif exercise.exercise_id in data.delete_exercises_ids:
                     lesson.exercises.remove(exercise)
-
-            await uow.flush()
-
-            lesson = await sqlalchemy_to_pydantic(
-                lesson,
-                GetNestedLessonsDTO
-            )
-
-            return lesson
-
-    async def update_courses(self, lesson_id: int, data: UpdateLessonsCoursesDTO) -> GetNestedLessonsDTO:
-        async with self.uow as uow:
-            lesson = await uow.lesson_repository.get_by_id(lesson_id)
-            if not lesson:
-                raise LessonsNotFound()
-            existed_courses_ids = [course.course_id for course in lesson.courses]
-
-            courses = await uow.course_repository.get_by_ids(data.add_courses_ids + data.delete_courses_ids)
-            validate_all_ids_found(
-                input_ids=data.add_courses_ids + data.delete_courses_ids,
-                founded_objects=courses,
-                id_getter_function=lambda course: course.course_id,
-                exception_builder=CoursesNotFound
-            )
-
-            data.add_courses_ids = list(
-                filter(partial(is_number_not_in_list, list_=existed_courses_ids), data.add_courses_ids))
-            data.delete_courses_ids = list(
-                filter(partial(is_number_in_list, list_=existed_courses_ids), data.delete_courses_ids))
-
-            for course in courses:
-                if course.course_id in data.add_courses_ids:
-                    lesson.courses.append(course)
-                elif course.course_id in data.delete_courses_ids:
-                    lesson.courses.remove(course)
 
             await uow.flush()
 

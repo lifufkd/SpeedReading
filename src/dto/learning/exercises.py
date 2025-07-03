@@ -24,13 +24,3 @@ class CreateExerciseDTO(BaseModel):
 class UpdateExerciseDTO(BaseModel):
     title: Optional[str] = None
     type: Optional[ExerciseTypes] = None
-
-
-class UpdateExerciseLessonsDTO(BaseModel):
-    add_lessons_ids: list[int]
-    delete_lessons_ids: list[int]
-
-
-class UpdateExerciseCoursesDTO(BaseModel):
-    add_courses_ids: list[int]
-    delete_courses_ids: list[int]

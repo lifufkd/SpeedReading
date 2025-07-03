@@ -1,7 +1,5 @@
-from functools import partial
-
 from src.uow.abstract import AbstractUoW
-from src.core.exceptions import ExerciseNotFound, LessonsNotFound, CoursesNotFound
+from src.core.exceptions import ExerciseNotFound
 from src.core.orm_to_dto import many_sqlalchemy_to_pydantic
 from src.core.orm_to_dto import sqlalchemy_to_pydantic
 from src.dto.learning.assignment import FilterUsersTasksDTO
@@ -9,13 +7,9 @@ from src.dto.learning.exercises import (
     GetExercisesDTO,
     GetNestedExercisesDTO,
     CreateExerciseDTO,
-    UpdateExerciseDTO,
-    UpdateExerciseLessonsDTO,
-    UpdateExerciseCoursesDTO
+    UpdateExerciseDTO
 )
 from src.schemas.enums import TaskTypes
-from src.validators.common import is_number_in_list, is_number_not_in_list
-from src.services.utils.validate_all_ids_found import validate_all_ids_found
 
 
 class ExerciseService:
@@ -44,76 +38,6 @@ class ExerciseService:
             )
 
             return exercises
-
-    async def update_lessons(self, exercise_id: int, data: UpdateExerciseLessonsDTO) -> GetNestedExercisesDTO:
-        async with self.uow as uow:
-            exercise = await uow.exercise_repository.get_by_id(exercise_id)
-            if not exercise:
-                raise ExerciseNotFound()
-            existed_lessons_ids = [lesson.lesson_id for lesson in exercise.lessons]
-
-            lessons = await uow.lesson_repository.get_by_ids(data.add_lessons_ids + data.delete_lessons_ids)
-            validate_all_ids_found(
-                input_ids=data.add_lessons_ids + data.delete_lessons_ids,
-                founded_objects=lessons,
-                id_getter_function=lambda lesson: lesson.lesson_id,
-                exception_builder=LessonsNotFound
-            )
-
-            data.add_lessons_ids = list(
-                filter(partial(is_number_not_in_list, list_=existed_lessons_ids), data.add_lessons_ids))
-            data.delete_lessons_ids = list(
-                filter(partial(is_number_in_list, list_=existed_lessons_ids), data.delete_lessons_ids))
-
-            for lesson in lessons:
-                if lesson.lesson_id in data.add_lessons_ids:
-                    exercise.lessons.append(lesson)
-                elif lesson.lesson_id in data.delete_lessons_ids:
-                    exercise.lessons.remove(lesson)
-
-            await uow.flush()
-
-            exercise = await sqlalchemy_to_pydantic(
-                exercise,
-                GetNestedExercisesDTO
-            )
-
-            return exercise
-
-    async def update_courses(self, exercise_id: int, data: UpdateExerciseCoursesDTO) -> GetNestedExercisesDTO:
-        async with self.uow as uow:
-            exercise = await uow.exercise_repository.get_by_id(exercise_id)
-            if not exercise:
-                raise ExerciseNotFound()
-            existed_courses_ids = [course.course_id for course in exercise.courses]
-
-            courses = await uow.course_repository.get_by_ids(data.add_courses_ids + data.delete_courses_ids)
-            validate_all_ids_found(
-                input_ids=data.add_courses_ids + data.delete_courses_ids,
-                founded_objects=courses,
-                id_getter_function=lambda course: course.course_id,
-                exception_builder=CoursesNotFound
-            )
-
-            data.add_courses_ids = list(
-                filter(partial(is_number_not_in_list, list_=existed_courses_ids), data.add_courses_ids))
-            data.delete_courses_ids = list(
-                filter(partial(is_number_in_list, list_=existed_courses_ids), data.delete_courses_ids))
-
-            for course in courses:
-                if course.course_id in data.add_courses_ids:
-                    exercise.courses.append(course)
-                elif course.course_id in data.delete_courses_ids:
-                    exercise.courses.remove(course)
-
-            await uow.flush()
-
-            exercise = await sqlalchemy_to_pydantic(
-                exercise,
-                GetNestedExercisesDTO
-            )
-
-            return exercise
 
     async def create(self, data: CreateExerciseDTO) -> GetExercisesDTO:
         async with self.uow as uow:

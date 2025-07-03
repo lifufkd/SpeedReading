@@ -31,6 +31,11 @@ class UserIsNotAdmin(AppException):
         super().__init__(detail="Operation not allowed", status_code=403)
 
 
+class TaskTypeNotSupported(AppException):
+    def __init__(self):
+        super().__init__(detail="This task type not supported for this method", status_code=422)
+
+
 class UserIsNotStudent(AppException):
     def __init__(self):
         super().__init__(detail="Operation not allowed, user is not a student", status_code=403)

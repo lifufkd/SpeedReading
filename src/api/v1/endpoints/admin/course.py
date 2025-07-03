@@ -1,5 +1,6 @@
 from fastapi import APIRouter, status, Depends, Body, Path
 
+from src.core.exceptions import TaskTypeNotSupported
 from src.services.learning.course import CourseService
 from src.services.learning.assignment import AssignmentService
 from src.dependencies.security import validate_token, validate_admin
@@ -7,17 +8,16 @@ from src.dependencies.services import get_course_service, get_assignment_service
 from src.dto.learning.courses import (
     CreateCoursesDTO,
     UpdateCoursesDTO,
-    UpdateCoursesExerciseDTO,
-    UpdateCoursesLessonsDTO
+    UpdateCourseRelationDTO
 )
 from src.core.dto_to_schema import many_dto_to_schema, dto_to_schema
+from src.schemas.learning.base import TaskTypes
 from src.schemas.learning.courses import (
     CoursesSchema,
     CoursesNestedSchema,
     CreateCoursesSchema,
     UpdateCoursesSchema,
-    UpdateCoursesExerciseSchema,
-    UpdateCoursesLessonsSchema
+    UpdateCourseRelationSchema
 )
 
 router = APIRouter(
@@ -82,41 +82,28 @@ async def delete_course(
     await course_service.delete(course_id)
 
 
-@router.patch("/{course_id}/exercises", status_code=status.HTTP_200_OK, response_model=CoursesNestedSchema)
-async def update_course_exercises(
+@router.patch("/{course_id}/tasks", status_code=status.HTTP_200_OK, response_model=CoursesNestedSchema)
+async def update_course_tasks(
         course_id: int = Path(),
-        request: UpdateCoursesExerciseSchema = Body(),
+        request: UpdateCourseRelationSchema = Body(),
         course_service: CourseService = Depends(get_course_service),
         assignment_service: AssignmentService = Depends(get_assignment_service)
 ):
-    data = UpdateCoursesExerciseDTO(
+    data = UpdateCourseRelationDTO(
         **request.model_dump()
     )
-    course = await course_service.update_exercises(course_id, data)
+    match data.task_type:
+        case TaskTypes.EXERCISE:
+            task = await course_service.update_exercises(course_id, data)
+        case TaskTypes.LESSON:
+            task = await course_service.update_lessons(course_id, data)
+        case _:
+            raise TaskTypeNotSupported()
+
     await assignment_service.update_progress()
-    course = await dto_to_schema(
-        course,
+    task = await dto_to_schema(
+        task,
         CoursesNestedSchema
     )
 
-    return course
-
-
-@router.patch("/{course_id}/lessons", status_code=status.HTTP_200_OK, response_model=CoursesNestedSchema)
-async def update_course_lessons(
-        course_id: int = Path(),
-        request: UpdateCoursesLessonsSchema = Body(),
-        course_service: CourseService = Depends(get_course_service),
-        assignment_service: AssignmentService = Depends(get_assignment_service)
-):
-    data = UpdateCoursesLessonsDTO(
-        **request.model_dump()
-    )
-    course = await course_service.update_lessons(course_id, data)
-    await assignment_service.update_progress()
-    course = await dto_to_schema(
-        course,
-        CoursesNestedSchema
-    )
-
-    return course
+    return task
