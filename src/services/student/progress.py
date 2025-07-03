@@ -1,6 +1,5 @@
 from src.uow.abstract import AbstractUoW
 from src.core.exceptions import UserNotFound, ExerciseNotFound
-from src.validators.users import validate_user_is_student
 from src.dto.users import GetUserNestedProgressDTO
 from src.dto.student.progresses import UpdateUserProgressDTO, GetUserProgressDTO
 from src.core.orm_to_dto import sqlalchemy_to_pydantic
@@ -15,7 +14,6 @@ class ProgressService:
             user = await uow.user_repository.get_by_id(user_id)
             if not user:
                 raise UserNotFound()
-            await validate_user_is_student(user)   # TODO: User must be as DTO object
 
             user = await sqlalchemy_to_pydantic(
                 user,
@@ -29,7 +27,6 @@ class ProgressService:
             user = await uow.user_repository.get_by_id(user_id)
             if not user:
                 raise UserNotFound()
-            await validate_user_is_student(user)  # TODO: User must be as DTO object
 
             user_progress = await uow.users_progress_repository.get_by_id(user_id, exercise_id)
             if not user_progress:

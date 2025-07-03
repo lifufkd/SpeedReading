@@ -31,6 +31,11 @@ class UserIsNotAdmin(AppException):
         super().__init__(detail="Operation not allowed", status_code=403)
 
 
+class TaskTypeNotSupported(AppException):
+    def __init__(self):
+        super().__init__(detail="This task type not supported for this method", status_code=422)
+
+
 class UserIsNotStudent(AppException):
     def __init__(self):
         super().__init__(detail="Operation not allowed, user is not a student", status_code=403)
@@ -80,3 +85,13 @@ class AssignedTasksNotFound(AppException):
         else:
             msg = "Assigned not found"
         super().__init__(detail=msg, status_code=404)
+
+
+class UpdateRelationIdsInvalid(AppException):
+    def __init__(self, wrong_add_ids: list[int] | None = None, wrong_delete_ids: list[int] | None = None):
+        msg = "Relation update ids invalid:"
+        if wrong_add_ids:
+            msg = msg + f" add_ids already existed in relation: ({','.join(map(str, wrong_add_ids))}),"
+        if wrong_delete_ids:
+            msg = msg + f" delete_ids not existed in relation: ({','.join(map(str, wrong_delete_ids))})"
+        super().__init__(detail=msg, status_code=422)

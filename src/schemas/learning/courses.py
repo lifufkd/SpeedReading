@@ -1,8 +1,8 @@
 from pydantic import BaseModel
 from typing import Optional
 
-from src.schemas.learning.base import UniqueFieldValidator
 from src.schemas.base import TimestampedSchema
+from src.schemas.learning.base import UpdateTaskRelationSchemaBase
 
 
 class CoursesSchema(TimestampedSchema):
@@ -28,11 +28,5 @@ class UpdateCoursesSchema(BaseModel):
     title: Optional[str] = None
 
 
-class UpdateCoursesExerciseSchema(UniqueFieldValidator):
-    add_exercises_ids: Optional[list[int]] = []
-    delete_exercises_ids: Optional[list[int]] = []
-
-
-class UpdateCoursesLessonsSchema(UniqueFieldValidator):
-    add_lessons_ids: Optional[list[int]] = []
-    delete_lessons_ids: Optional[list[int]] = []
+class UpdateCourseRelationSchema(UpdateTaskRelationSchemaBase):
+    pass

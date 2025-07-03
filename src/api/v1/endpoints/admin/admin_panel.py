@@ -1,7 +1,7 @@
 from fastapi import APIRouter, status, Depends, Body, Path
 
 from src.services.users.admin_panel import AdminPanelService
-from src.dependencies.security import validate_token, validate_admin
+from src.dependencies.security import validate_token
 from src.dependencies.services import get_admin_panel_service
 from src.validators.users import validate_not_same_id
 from src.core.jwt import get_password_hash
@@ -9,9 +9,7 @@ from src.dto.users.admin_panel import GetUserDTO, CreateUserDTO, UpdateUserDTO
 from src.core.dto_to_schema import many_dto_to_schema, dto_to_schema
 from src.schemas.users.admin_panel import UserSchema, CreateUserSchema, UpdateUserSchema
 
-router = APIRouter(
-    dependencies=[Depends(validate_token), Depends(validate_admin)],
-)
+router = APIRouter()
 
 
 @router.get("/users", status_code=status.HTTP_200_OK, response_model=list[UserSchema])

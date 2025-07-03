@@ -4,6 +4,7 @@ from typing import Optional
 from src.schemas.enums import TaskTypes
 from src.schemas.enums import ExerciseCompleteStatus
 from src.dto.base import TimestampedDTO
+from src.dto.learning.base import UpdateTaskRelationDTOBase
 
 
 class UsersTasksDTO(TimestampedDTO):
@@ -26,16 +27,5 @@ class FilterUsersTasksDTO(BaseModel):
     task_type: Optional[TaskTypes] = None
 
 
-class UpdateAssignedExercisesDTO(BaseModel):
-    add_exercises_ids: list[int]
-    delete_exercises_ids: list[int]
-
-
-class UpdateAssignedLessonsDTO(BaseModel):
-    add_lessons_ids: list[int]
-    delete_lessons_ids: list[int]
-
-
-class UpdateAssignedCoursesDTO(BaseModel):
-    add_courses_ids: list[int]
-    delete_courses_ids: list[int]
+class UpdateAssignedTasksDTO(UpdateTaskRelationDTOBase):
+    pass

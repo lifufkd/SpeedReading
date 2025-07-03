@@ -2,6 +2,7 @@ from pydantic import BaseModel
 from typing import Optional
 
 from src.dto.base import TimestampedDTO
+from src.dto.learning.base import UpdateTaskRelationDTOBase
 
 
 class GetLessonsDTO(TimestampedDTO):
@@ -26,12 +27,5 @@ class UpdateLessonsDTO(BaseModel):
     title: Optional[str] = None
 
 
-class UpdateLessonsExerciseDTO(BaseModel):
-    add_exercises_ids: list[int]
-    delete_exercises_ids: list[int]
-
-
-class UpdateLessonsCoursesDTO(BaseModel):
-    add_courses_ids: list[int]
-    delete_courses_ids: list[int]
-
+class UpdateLessonRelationDTO(UpdateTaskRelationDTOBase):
+    pass
