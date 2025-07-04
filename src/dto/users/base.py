@@ -26,3 +26,7 @@ class UpdateUserDTOBase(BaseModel):
     email: Optional[EmailStr] = None
     role: Optional[UsersRoles] = None
 
+
+class FilterUserDTOBase(BaseModel):
+    pass
+

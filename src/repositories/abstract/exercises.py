@@ -11,15 +11,15 @@ class ExerciseAbstract(ABC):
         pass
 
     @abstractmethod
-    async def add(self, data: CreateExerciseDTO) -> Exercises:
-        pass
-
-    @abstractmethod
     async def get_by_id(self, exercise_id: int) -> Exercises:
         pass
 
     @abstractmethod
     async def get_by_ids(self, exercises_ids: list[int]) -> list[Exercises]:
+        pass
+
+    @abstractmethod
+    async def add(self, data: CreateExerciseDTO) -> Exercises:
         pass
 
     @abstractmethod

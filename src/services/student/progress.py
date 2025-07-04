@@ -11,7 +11,7 @@ class ProgressService:
 
     async def get(self, user_id: int) -> GetUserNestedProgressDTO:
         async with self.uow as uow:
-            user = await uow.user_repository.get_by_id(user_id)
+            user = await uow.user_repository.get_by_id_progress_nested(user_id)
             if not user:
                 raise UserNotFound()
 

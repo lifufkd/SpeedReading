@@ -14,7 +14,7 @@ class TasksService:
 
     async def get(self, user_id: int) -> GetUserTaskTreeDTO:
         async with self.uow as uow:
-            user = await uow.user_repository.get_by_id(user_id)
+            user = await uow.user_repository.get_by_id_tasks_nested(user_id)
             if not user:
                 raise UserNotFound()
 
@@ -29,14 +29,14 @@ class TasksService:
                         )
                         user_tasks_tree.exercises.append(exercise_dto)
                     case TaskTypes.LESSON:
-                        lesson = await uow.lesson_repository.get_by_id(task.task_id)
+                        lesson = await uow.lesson_repository.get_by_id_exercises_nested(task.task_id)
                         lesson_dto = await sqlalchemy_to_pydantic(
                             lesson,
                             GetLessonNestedExercisesDTO
                         )
                         user_tasks_tree.lessons.append(lesson_dto)
                     case TaskTypes.COURSE:
-                        course = await uow.course_repository.get_by_id(task.task_id)
+                        course = await uow.course_repository.get_by_id_full_nested(task.task_id)
                         course_dto = await sqlalchemy_to_pydantic(
                             course,
                             GetCourseFullNestedDTO

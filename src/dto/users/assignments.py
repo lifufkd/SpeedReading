@@ -1,4 +1,5 @@
-from src.dto.users.base import GetUserDTOBase
+from src.dto.users.base import GetUserDTOBase, FilterUserDTOBase
+from src.schemas.enums import UsersRoles
 
 
 class GetUserNestedTasksDTO(GetUserDTOBase):
@@ -11,3 +12,7 @@ class GetUserNestedProgressDTO(GetUserDTOBase):
 
 class GetUserNestedDTO(GetUserNestedTasksDTO, GetUserNestedProgressDTO):
     pass
+
+
+class FilterUserDTO(FilterUserDTOBase):
+    role: UsersRoles

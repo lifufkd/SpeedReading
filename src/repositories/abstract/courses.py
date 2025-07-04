@@ -11,15 +11,23 @@ class CoursesAbstract(ABC):
         pass
 
     @abstractmethod
-    async def add(self, data: CreateCoursesDTO) -> Courses:
-        pass
-
-    @abstractmethod
     async def get_by_id(self, course_id: int) -> Courses:
         pass
 
     @abstractmethod
+    async def get_by_id_exercises_lessons_nested(self, course_id: int) -> Courses:
+        pass
+
+    @abstractmethod
+    async def get_by_id_full_nested(self, course_id: int) -> Courses:
+        pass
+
+    @abstractmethod
     async def get_by_ids(self, courses_ids: list[int]) -> list[Courses]:
+        pass
+
+    @abstractmethod
+    async def add(self, data: CreateCoursesDTO) -> Courses:
         pass
 
     @abstractmethod
