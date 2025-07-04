@@ -24,13 +24,32 @@ class LessonRepository(LessonsAbstract):
     async def get_by_id(self, lesson_id: int) -> Lessons:
         query = (
             select(Lessons)
+            .where(Lessons.lesson_id == lesson_id)
+        )
+
+        result = await self._session.execute(query)
+        return result.scalar_one_or_none()
+
+    async def get_by_id_exercises_nested(self, lesson_id: int) -> Lessons:
+        query = (
+            select(Lessons)
+            .options(selectinload(Lessons.exercises))
+            .where(Lessons.lesson_id == lesson_id)
+        )
+
+        result = await self._session.execute(query)
+        return result.scalar_one_or_none()
+
+    async def get_by_id_full_nested(self, lesson_id: int) -> Lessons:
+        query = (
+            select(Lessons)
             .options(selectinload(Lessons.exercises))
             .options(selectinload(Lessons.courses))
             .where(Lessons.lesson_id == lesson_id)
         )
+
         result = await self._session.execute(query)
-        exercise = result.scalar_one_or_none()
-        return exercise
+        return result.scalar_one_or_none()
 
     async def get_by_ids(self, lessons_ids: list[int]) -> list[Lessons]:
         query = (

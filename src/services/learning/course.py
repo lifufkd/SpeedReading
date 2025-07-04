@@ -44,7 +44,7 @@ class CourseService:
 
     async def update_exercises(self, course_id: int, data: UpdateCourseRelationDTO) -> GetNestedCoursesDTO:
         async with self.uow as uow:
-            course = await uow.course_repository.get_by_id(course_id)
+            course = await uow.course_repository.get_by_id_exercises_lessons_nested(course_id)
             if not course:
                 raise CoursesNotFound()
 
@@ -68,7 +68,7 @@ class CourseService:
 
     async def update_lessons(self, course_id: int, data: UpdateCourseRelationDTO) -> GetNestedCoursesDTO:
         async with self.uow as uow:
-            course = await uow.course_repository.get_by_id(course_id)
+            course = await uow.course_repository.get_by_id_exercises_lessons_nested(course_id)
             if not course:
                 raise CoursesNotFound()
 

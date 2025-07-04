@@ -1,34 +1,41 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
+from typing import TypeVar
 
 from src.models.users import Users
 from src.repositories.abstract.users import UserAbstract
-from src.dto.users.base import UpdateUserDTOBase, CreateUserDTOBase
-from src.schemas.enums import UsersRoles
+from src.dto.users.base import UpdateUserDTOBase, CreateUserDTOBase, FilterUserDTOBase
+
+
+TGET_ALL = TypeVar("TGET_ALL", bound=FilterUserDTOBase)
+TADD = TypeVar("TADD", bound=CreateUserDTOBase)
+TUPDATE = TypeVar("TUPDATE", bound=UpdateUserDTOBase)
 
 
 class UserRepository(UserAbstract):
     def __init__(self, session: AsyncSession):
         self._session = session
 
-    async def get_all(self) -> list[Users]:
-        query = (
-            select(Users)
-        )
+    async def get_all(self, filter: type[TGET_ALL] | None = None) -> list[Users]:
+        query = select(Users)
+        if filter:
+            query = query.filter_by(**filter.model_dump(exclude_none=True))
+
         result = await self._session.execute(query)
 
         return list(result.scalars().all())
 
-    async def get_all_students(self) -> list[Users]:
+    async def get_all_full_nested(self, filter: type[TGET_ALL] | None = None) -> list[Users]:
         query = (
             select(Users)
-            .where(Users.role == UsersRoles.USER)
             .options(selectinload(Users.tasks))
             .options(selectinload(Users.progress))
         )
-        result = await self._session.execute(query)
+        if filter:
+            query = query.filter_by(**filter.model_dump(exclude_none=True))
 
+        result = await self._session.execute(query)
         return list(result.scalars().all())
 
     async def get_by_name(self, name: str) -> Users:
@@ -36,6 +43,7 @@ class UserRepository(UserAbstract):
             select(Users)
             .where(Users.login == name)
         )
+
         result = await self._session.execute(query)
         user = result.scalar_one_or_none()
         return user
@@ -43,15 +51,48 @@ class UserRepository(UserAbstract):
     async def get_by_id(self, user_id: int) -> Users:
         query = (
             select(Users)
-            .options(selectinload(Users.tasks))
-            .options(selectinload(Users.progress))
             .where(Users.user_id == user_id)
         )
+
         result = await self._session.execute(query)
         user = result.scalar_one_or_none()
         return user
 
-    async def add(self, data: CreateUserDTOBase) -> Users:
+    async def get_by_id_tasks_nested(self, user_id: int) -> Users:
+        query = (
+            select(Users)
+            .options(selectinload(Users.tasks))
+            .where(Users.user_id == user_id)
+        )
+
+        result = await self._session.execute(query)
+        user = result.scalar_one_or_none()
+        return user
+
+    async def get_by_id_progress_nested(self, user_id: int) -> Users:
+        query = (
+            select(Users)
+            .options(selectinload(Users.progress))
+            .where(Users.user_id == user_id)
+        )
+
+        result = await self._session.execute(query)
+        user = result.scalar_one_or_none()
+        return user
+
+    async def get_by_id_full_nested(self, user_id: int) -> Users:
+        query = (
+            select(Users)
+            .options(selectinload(Users.tasks))
+            .options(selectinload(Users.progress))
+            .where(Users.user_id == user_id)
+        )
+
+        result = await self._session.execute(query)
+        user = result.scalar_one_or_none()
+        return user
+
+    async def add(self, data: type[TADD]) -> Users:
         new_user = Users(
             **data.model_dump(exclude_none=True)
         )
@@ -61,7 +102,7 @@ class UserRepository(UserAbstract):
 
         return new_user
 
-    async def update(self, user_id: int, data: UpdateUserDTOBase) -> Users | None:
+    async def update(self, user_id: int, data: type[TUPDATE]) -> Users | None:
         user = await self.get_by_id(user_id)
         if not user:
             return None

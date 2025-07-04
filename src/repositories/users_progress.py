@@ -16,12 +16,14 @@ class UsersProgressRepository(UsersProgressAbstract):
             .where(UsersProgress.user_id == user_id)
             .where(UsersProgress.exercise_id == exercise_id)
         )
+
         result = await self._session.execute(query)
         return result.scalar_one_or_none()
 
-    async def update(self, progress: UsersProgress, data: UpdateUserProgressDTO) -> None:
+    async def update(self, progress: UsersProgress, data: UpdateUserProgressDTO) -> UsersProgress:
         for key, value in data.model_dump().items():
             setattr(progress, key, value)
 
         await self._session.flush()
         await self._session.refresh(progress)
+        return progress

@@ -44,7 +44,7 @@ class LessonService:
 
     async def update_exercises(self, lesson_id: int, data: UpdateLessonRelationDTO) -> GetNestedLessonsDTO:
         async with self.uow as uow:
-            lesson = await uow.lesson_repository.get_by_id(lesson_id)
+            lesson = await uow.lesson_repository.get_by_id_full_nested(lesson_id)
             if not lesson:
                 raise LessonsNotFound()
 

@@ -2,7 +2,7 @@ from src.uow.abstract import AbstractUoW
 from src.core.exceptions import UserNotFound, ExerciseNotFound
 from src.core.orm_to_dto import sqlalchemy_to_pydantic
 from src.schemas.enums import ExerciseTypes
-from src.services.student.utils import extract_exercise_ids_from_tasks
+from src.services.student.helper import StudentHelper
 from src.dto.student.exercise import (
     GetDarkenedExerciseDTO,
     GetBlocksExerciseDTO,
@@ -15,6 +15,7 @@ from src.dto.student.exercise import (
 class ExerciseService:
     def __init__(self, uow: AbstractUoW):
         self.uow = uow
+        self.student_helper = StudentHelper()
 
     async def get(
             self,
@@ -22,7 +23,7 @@ class ExerciseService:
             exercise_id: int
     ) -> GetDarkenedExerciseDTO | GetBlocksExerciseDTO | GetTablesExerciseDTO | GetSchulteExerciseDTO | GetEffectiveExerciseDTO:
         async with self.uow as uow:
-            user = await uow.user_repository.get_by_id(user_id)
+            user = await uow.user_repository.get_by_id_tasks_nested(user_id)
             if not user:
                 raise UserNotFound()
 
@@ -30,7 +31,7 @@ class ExerciseService:
             if not exercise:
                 raise ExerciseNotFound()
 
-            user_exercises_ids = await extract_exercise_ids_from_tasks(user, uow)
+            user_exercises_ids = await self.student_helper.extract_exercise_ids_from_tasks(user, uow)
             if exercise_id not in user_exercises_ids:
                 raise ExerciseNotFound()
 

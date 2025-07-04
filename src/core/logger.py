@@ -1,6 +1,5 @@
-import sys
 from loguru import logger
-
+import sys
 from src.core.config import logger_settings
 
 
@@ -15,8 +14,10 @@ def setup_logger():
     logger.add(
         sys.stdout,
         level=logger_settings.LOG_LEVEL.value,
-        format="<green>{time:YYYY-MM-DD HH:mm:ss}</green> | <level>{level}</level> | <cyan>{name}</cyan>:<cyan>{"
-               "function}</cyan> - <level>{message}</level>"
+        enqueue=True,
+        format=lambda _: "\n<green>{time:YYYY-MM-DD HH:mm:ss}</green> | <level>{level}</level> | <cyan>{"
+                         "name}</cyan>:<cyan>{"
+                         "function}</cyan> - <level>{message}</level>"
     )
 
     logger.add(
@@ -27,7 +28,7 @@ def setup_logger():
         compression=logger_settings.LOG_COMPRESSION,
         enqueue=True,
         backtrace=True,
-        diagnose=True,
+        diagnose=False,
         format="{time:YYYY-MM-DD HH:mm:ss} | {level} | {extra[module]} | {message}"
     )
 

@@ -15,7 +15,7 @@ async def get_tasks(
         current_user: GetUserDTO = Depends(validate_token),
         tasks_service: TasksService = Depends(get_tasks_service),
 ):
-
+    0 / 0
     tasks = await tasks_service.get(current_user.user_id)
     tasks = await dto_to_schema(
         tasks,

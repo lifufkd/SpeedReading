@@ -1,3 +1,5 @@
+import logging
+
 from src.database.session import get_session
 from src.services.users.super_admin_init import SuperAdminInitService
 from src.uow.sqlalchemy_uow import SQLAlchemyUoW
@@ -27,3 +29,14 @@ async def create_super_admin():
         )
     finally:
         await session_gen.aclose()
+
+
+async def disable_default_logging():
+    logging.getLogger().handlers = []
+    logging.root.handlers = []
+    logging.root.setLevel(logging.CRITICAL)
+
+    for logger_name in ["uvicorn", "uvicorn.error", "uvicorn.access", "asyncio"]:
+        logging.getLogger(logger_name).handlers = []
+        logging.getLogger(logger_name).propagate = False
+        logging.getLogger(logger_name).disabled = True

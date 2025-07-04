@@ -11,5 +11,5 @@ class UsersProgressAbstract(ABC):
         pass
 
     @abstractmethod
-    async def update(self, progress: UsersProgress, data: UpdateUserProgressDTO) -> None:
+    async def update(self, progress: UsersProgress, data: UpdateUserProgressDTO) -> UsersProgress:
         pass

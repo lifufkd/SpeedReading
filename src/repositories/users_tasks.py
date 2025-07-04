@@ -18,6 +18,7 @@ class UsersTasksRepository(UsersTasksAbstract):
                 **data.model_dump(exclude_none=True)
             )
         )
+
         result = await self._session.execute(query)
         return list(result.scalars().all())
 
@@ -27,8 +28,8 @@ class UsersTasksRepository(UsersTasksAbstract):
             .where(UsersTasks.user_id == user_id)
             .where(UsersTasks.task_type == task_type)
         )
-        result = await self._session.execute(query)
 
+        result = await self._session.execute(query)
         return list(result.scalars().all())
 
     async def delete(self, data: FilterUsersTasksDTO) -> None:

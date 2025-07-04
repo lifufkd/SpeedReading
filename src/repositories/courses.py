@@ -18,18 +18,39 @@ class CourseRepository(CoursesAbstract):
             .options(selectinload(Courses.exercises))
             .options(selectinload(Courses.lessons))
         )
-        result = await self._session.execute(query)
 
+        result = await self._session.execute(query)
         return list(result.scalars().all())
 
     async def get_by_id(self, course_id: int) -> Courses:
         query = (
             select(Courses)
-            .options(selectinload(Courses.exercises))  # direct exercises
-            .options(selectinload(Courses.lessons))  # direct lessons
-            .options(selectinload(Courses.lessons).selectinload(Lessons.exercises))  # nested exercises
             .where(Courses.course_id == course_id)
         )
+
+        result = await self._session.execute(query)
+        return result.scalar_one_or_none()
+
+    async def get_by_id_exercises_lessons_nested(self, course_id: int) -> Courses:
+        query = (
+            select(Courses)
+            .options(selectinload(Courses.exercises))
+            .options(selectinload(Courses.lessons))
+            .where(Courses.course_id == course_id)
+        )
+
+        result = await self._session.execute(query)
+        return result.scalar_one_or_none()
+
+    async def get_by_id_full_nested(self, course_id: int) -> Courses:
+        query = (
+            select(Courses)
+            .options(selectinload(Courses.exercises))
+            .options(selectinload(Courses.lessons))
+            .options(selectinload(Courses.lessons).selectinload(Lessons.exercises))
+            .where(Courses.course_id == course_id)
+        )
+
         result = await self._session.execute(query)
         return result.scalar_one_or_none()
 
@@ -38,6 +59,7 @@ class CourseRepository(CoursesAbstract):
             select(Courses)
             .filter(Courses.course_id.in_(courses_ids))
         )
+
         result = await self._session.execute(query)
         return list(result.scalars().all())
 
@@ -45,10 +67,10 @@ class CourseRepository(CoursesAbstract):
         new_course = Courses(
             **data.model_dump()
         )
+
         self._session.add(new_course)
         await self._session.flush()
         await self._session.refresh(new_course)
-
         return new_course
 
     async def update(self, course_id: int, data: UpdateCoursesDTO) -> Courses | None:
@@ -61,13 +83,12 @@ class CourseRepository(CoursesAbstract):
 
         await self._session.flush()
         await self._session.refresh(course)
-
         return course
 
     async def delete(self, course_id: int) -> bool | None:
         course = await self.get_by_id(course_id)
         if not course:
             return None
-        await self._session.delete(course)
 
+        await self._session.delete(course)
         return True

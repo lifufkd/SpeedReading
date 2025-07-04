@@ -3,7 +3,7 @@ from typing import Callable, TypeVar, Awaitable, Sequence
 from src.uow.abstract import AbstractUoW
 from src.core.exceptions import ExerciseNotFound, UserNotFound, LessonsNotFound, CoursesNotFound
 from src.core.orm_to_dto import many_sqlalchemy_to_pydantic, sqlalchemy_to_pydantic
-from src.dto.users import GetUserNestedTasksDTO, GetUserNestedProgressDTO, GetUserNestedDTO
+from src.dto.users.assignments import GetUserNestedTasksDTO, GetUserNestedProgressDTO, GetUserNestedDTO, FilterUserDTO
 from src.dto.learning.assignment import UpdateAssignedTasksDTO
 from src.schemas.enums import TaskTypes, UsersRoles
 from src.models.users_tasks import UsersTasks
@@ -11,7 +11,7 @@ from src.models.m2m import UsersProgress
 from src.models.users import Users
 from src.validators.users import validate_user_is_student
 from src.validators.common import is_update_relation_ids_is_valid, validate_all_ids_found
-from src.services.student.utils import extract_exercise_ids_from_tasks
+from src.services.student.helper import StudentHelper
 
 
 T = TypeVar("T")
@@ -20,10 +20,14 @@ T = TypeVar("T")
 class AssignmentService:
     def __init__(self, uow: AbstractUoW):
         self.uow = uow
+        self.student_helper = StudentHelper()
 
     async def get_all_students(self) -> list[GetUserNestedDTO]:
         async with self.uow as uow:
-            users = await uow.user_repository.get_all_students()
+            filter = FilterUserDTO(
+                role=UsersRoles.USER
+            )
+            users = await uow.user_repository.get_all_full_nested(filter)
             users = await many_sqlalchemy_to_pydantic(
                 users,
                 GetUserNestedDTO
@@ -71,7 +75,7 @@ class AssignmentService:
 
     async def update_exercises(self, user_id: int, data: UpdateAssignedTasksDTO) -> GetUserNestedTasksDTO:
         async with self.uow as uow:
-            user = await uow.user_repository.get_by_id(user_id)
+            user = await uow.user_repository.get_by_id_tasks_nested(user_id)
             if not user:
                 raise UserNotFound()
             await validate_user_is_student(user)
@@ -96,7 +100,7 @@ class AssignmentService:
 
     async def update_lessons(self, user_id: int, data: UpdateAssignedTasksDTO) -> GetUserNestedTasksDTO:
         async with self.uow as uow:
-            user = await uow.user_repository.get_by_id(user_id)
+            user = await uow.user_repository.get_by_id_tasks_nested(user_id)
             if not user:
                 raise UserNotFound()
             await validate_user_is_student(user)
@@ -121,7 +125,7 @@ class AssignmentService:
 
     async def update_courses(self, user_id: int, data: UpdateAssignedTasksDTO) -> GetUserNestedTasksDTO:
         async with self.uow as uow:
-            user = await uow.user_repository.get_by_id(user_id)
+            user = await uow.user_repository.get_by_id_tasks_nested(user_id)
             if not user:
                 raise UserNotFound()
             await validate_user_is_student(user)
@@ -147,7 +151,7 @@ class AssignmentService:
     async def _update_students_progress(self, user: Users, uow) -> GetUserNestedProgressDTO:
         user_progress = user.progress
 
-        user_tasks_exercises_ids = await extract_exercise_ids_from_tasks(user, uow)
+        user_tasks_exercises_ids = await self.student_helper.extract_exercise_ids_from_tasks(user, uow)
         user_progress_exercises_ids = [progress.exercise_id for progress in user_progress]
 
         for task_exercise_id in user_tasks_exercises_ids:
@@ -171,7 +175,7 @@ class AssignmentService:
 
     async def update_progress_by_user_id(self, user_id: int) -> GetUserNestedProgressDTO:
         async with self.uow as uow:
-            user = await uow.user_repository.get_by_id(user_id)
+            user = await uow.user_repository.get_by_id_full_nested(user_id)
             if not user:
                 raise UserNotFound()
             await validate_user_is_student(user)
@@ -182,7 +186,10 @@ class AssignmentService:
     async def update_progress(self) -> list[GetUserNestedProgressDTO]:
         async with self.uow as uow:
             updated_users = []
-            users = await uow.user_repository.get_all_students()
+            filter = FilterUserDTO(
+                role=UsersRoles.USER
+            )
+            users = await uow.user_repository.get_all_full_nested(filter)
 
             for user in users:
                 if user.role != UsersRoles.USER:

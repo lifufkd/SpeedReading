@@ -17,26 +17,25 @@ class ExerciseRepository(ExerciseAbstract):
             .options(selectinload(Exercises.lessons))
             .options(selectinload(Exercises.courses))
         )
-        result = await self._session.execute(query)
 
+        result = await self._session.execute(query)
         return list(result.scalars().all())
 
     async def get_by_id(self, exercise_id: int) -> Exercises:
         query = (
             select(Exercises)
-            .options(selectinload(Exercises.lessons))
-            .options(selectinload(Exercises.courses))
             .where(Exercises.exercise_id == exercise_id)
         )
+
         result = await self._session.execute(query)
-        exercise = result.scalar_one_or_none()
-        return exercise
+        return result.scalar_one_or_none()
 
     async def get_by_ids(self, exercises_ids: list[int]) -> list[Exercises]:
         query = (
             select(Exercises)
             .filter(Exercises.exercise_id.in_(exercises_ids))
         )
+
         result = await self._session.execute(query)
         return list(result.scalars().all())
 
@@ -44,10 +43,10 @@ class ExerciseRepository(ExerciseAbstract):
         new_exercise = Exercises(
             **data.model_dump()
         )
+
         self._session.add(new_exercise)
         await self._session.flush()
         await self._session.refresh(new_exercise)
-
         return new_exercise
 
     async def update(self, exercise_id: int, data: UpdateExerciseDTO) -> Exercises | None:
@@ -60,13 +59,12 @@ class ExerciseRepository(ExerciseAbstract):
 
         await self._session.flush()
         await self._session.refresh(exercise)
-
         return exercise
 
     async def delete(self, exercise_id: int) -> bool | None:
         exercise = await self.get_by_id(exercise_id)
         if not exercise:
             return None
-        await self._session.delete(exercise)
 
+        await self._session.delete(exercise)
         return True

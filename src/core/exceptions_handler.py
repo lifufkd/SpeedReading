@@ -7,15 +7,13 @@ from src.core.exceptions import AppException
 
 
 async def jwt_exception_handler(request: Request, exc: AuthJWTException):
-    logger.info(f"Auth error: {exc.message}")
     return JSONResponse(
-        status_code=exc.status_code,
+        status_code=403,
         content={"detail": exc.message}
     )
 
 
 async def app_exception_handler(request: Request, exc: AppException):
-    logger.info(f"Exception handled. Details: {exc.detail}, status_code: {exc.status_code}")
     return JSONResponse(
         status_code=exc.status_code,
         content={"detail": exc.detail},
