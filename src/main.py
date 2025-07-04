@@ -6,7 +6,7 @@ from fastapi_jwt_auth.exceptions import AuthJWTException
 
 from src.database.init_db import create_tables
 from src.api.v1.router import api_v1_router
-from src.core.bootstrap import create_super_admin
+from src.core.bootstrap import create_super_admin, disable_default_logging
 from src.core.exceptions import AppException
 from src.core.exceptions_handler import jwt_exception_handler, app_exception_handler, internal_server_error_handler
 from src.core.config import cors_settings
@@ -16,6 +16,7 @@ from src.core.logger import setup_logger
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
+    await disable_default_logging()
     setup_logger()
     await create_tables()
     await create_super_admin()
