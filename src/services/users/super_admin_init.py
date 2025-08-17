@@ -1,0 +1,24 @@
+from src.uow.abstract import AbstractUoW
+from src.services.users.users import UsersService
+from src.dto.users.super_admin import GetUserDTO, CreateUserDTO
+from src.core.orm_to_dto import sqlalchemy_to_pydantic
+
+
+class SuperAdminInitService:
+    def __init__(self, uow: AbstractUoW):
+        self.uow = uow
+        self.users_service = UsersService(uow)
+
+    async def create_super_admin(self, user_name: str, data: CreateUserDTO) -> GetUserDTO | None:
+        async with self.uow as uow:
+            user = await self.users_service.get_by_name(name=user_name)
+            if user:
+                return None
+
+            super_admin = await uow.user_repository.add(data)
+            super_admin = await sqlalchemy_to_pydantic(
+                super_admin,
+                GetUserDTO
+            )
+
+            return super_admin

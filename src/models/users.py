@@ -1,0 +1,32 @@
+from sqlalchemy import BigInteger
+from sqlalchemy import Enum as SAEnum
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from src.database.base_mixins import TimestampMixin
+from src.database.base import OrmBase
+from src.schemas.enums import UsersRoles
+
+
+class Users(OrmBase, TimestampMixin):
+    __tablename__ = 'users'
+    user_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    login: Mapped[str] = mapped_column(nullable=False, unique=True)
+    password_hash: Mapped[str] = mapped_column(nullable=False)
+    email: Mapped[str] = mapped_column(nullable=True)
+    role: Mapped[UsersRoles] = mapped_column(
+        SAEnum(UsersRoles, name="users_role_enum", create_constraint=True),
+        nullable=False
+    )
+
+    tasks: Mapped[list["UsersTasks"]] = relationship(
+        back_populates="user",
+        cascade='all, delete-orphan'
+    )
+
+    progress: Mapped[list["UsersProgress"]] = relationship(
+        back_populates="user",
+        cascade='all, delete-orphan'
+    )
+
+    def __repr__(self):
+        return f"<User(id='{self.user_id}', login='{self.login}', password_hash='{self.password_hash}', role='{self.role}')>"
