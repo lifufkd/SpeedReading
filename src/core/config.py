@@ -11,9 +11,19 @@ class DBSettings(BaseSettings):
     DB_HOST: str = "localhost"
     DB_PORT: int = 5432
 
+    TEST_DB_USER: str = "postgres"
+    TEST_DB_PASSWORD: str = "postgres"
+    TEST_DB_DATABASE: str = "test_postgres"
+    TEST_DB_HOST: str = "localhost"
+    TEST_DB_PORT: int = 5432
+
     @property
     def async_postgresql_url(self) -> str:
         return f"postgresql+asyncpg://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_DATABASE}"
+
+    @property
+    def test_async_postgresql_url(self) -> str:
+        return f"postgresql+asyncpg://{self.TEST_DB_USER}:{self.TEST_DB_PASSWORD}@{self.TEST_DB_HOST}:{self.TEST_DB_PORT}/{self.TEST_DB_DATABASE}"
 
     @property
     def sync_postgresql_url(self) -> str:
